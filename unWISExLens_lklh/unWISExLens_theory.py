@@ -95,7 +95,7 @@ class unWISExLens_theory(Theory):
 
         if self.use_cleft and self.use_fiducial_cleft:
             if self.fiducial_cleft_interpolations_nonu_nonu is None or self.fiducial_cleft_interpolations_tot_nonu is None:
-                k, z, fid_cleft_table = np.load(os.path.join(self.data_base_path, "fiducial_cleft_spectra.npy"), allow_pickle=True)
+                k, z, fid_cleft_table = np.load(os.path.join(self.data_base_path, "aux_data/fiducial_cleft_spectra.npy"), allow_pickle=True)
                 self.fiducial_cleft_interpolations_nonu_nonu = self.cleft_interp_helper.interpolate_cleft_spectra(z, fid_cleft_table[0, :, 0], fid_cleft_table[..., 1:])
                 self.fiducial_cleft_interpolations_tot_nonu = self.fiducial_cleft_interpolations_nonu_nonu
 
