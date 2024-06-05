@@ -116,7 +116,7 @@ class unWISExLens_lklh(Likelihood):
                 instructions = binning_instructions[s]
 
                 if 'transfer_path' in instructions.keys():
-                    transfer_function = np.loadtxt(instructions['transfer_path'])
+                    transfer_function = np.loadtxt(os.path.join(self.data_base_path, f"aux_data/transfer_functions{instructions['transfer_path']}"))
                 else:
                     transfer_function = None
 
