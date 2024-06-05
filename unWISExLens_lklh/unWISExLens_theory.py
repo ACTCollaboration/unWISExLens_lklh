@@ -89,7 +89,7 @@ class unWISExLens_theory(Theory):
             else:
                 interp_helper_class = CleftInterpolationHelper
 
-            coevl = BiasEvolution(path=os.path.join(self.data_base_path, "aux_data/bias_coevol_ceoff.txt"))
+            coevl = BiasEvolution(path=os.path.join(self.data_base_path, "aux_data/bias_coevol_coeff.txt"))
 
             self.cleft_interp_helper = interp_helper_class(coevl, kmax=3.0)
 
