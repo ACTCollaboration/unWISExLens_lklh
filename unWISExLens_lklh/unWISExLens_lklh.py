@@ -106,7 +106,7 @@ class unWISExLens_lklh(Likelihood):
         else:
             covmat_filename_dict = yaml_load_file(os.path.join(os.path.abspath(os.path.dirname(__file__)), "config_files/covmat_filenames_cmbmarg.yaml"))
 
-        binning_instructions = yaml_load_file(os.path.join(os.path.abspath(os.path.dirname(__file__)), "config_files/binning_instructions.yaml"))
+        binning_instructions = yaml_load_file(os.path.join(os.path.abspath(os.path.dirname(__file__)), "config_files/binning_setup.yaml"))
 
         if len(self.samples) > 0:
 
