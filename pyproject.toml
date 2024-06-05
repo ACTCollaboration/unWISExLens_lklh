@@ -13,4 +13,4 @@ dynamic = ["version", "description"]
 dependencies = ["numpy >=1", "scipy >=1", "cobaya >=3", "healpy"]
 
 [project.urls]
-Source = "https://github.com/ACTCollaboration/unWISExlens_lklh"
+Source = "https://github.com/ACTCollaboration/unWISExLens_lklh"
