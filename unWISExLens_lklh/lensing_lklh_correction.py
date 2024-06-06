@@ -58,7 +58,7 @@ class LensingLklhCorrectionHelper(object):
 
 class LensingLklhCorrection(Theory):
 
-    lklh_corr_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data/aux_data/lklh_corr")
+    lklh_corr_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data/aux_data/lklh_corr")
 
     lklh_correction_paths = {'Blue_ACT$Green_ACT$ACT': {'fid_cls': 'cosmo2017_10K_acc3_lensedCls.dat',
                                                         'phi_cls': 'cosmo2017_10K_acc3_lenspotentialCls.dat',
