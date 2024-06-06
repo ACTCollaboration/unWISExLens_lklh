@@ -1,7 +1,7 @@
-ACT_Blue: unWISExACT-DR6_blue_baseline_Clgg+Clkk+Clkg.dat
-ACT_Green: unWISExACT-DR6_green_baseline_Clgg+Clkk+Clkg.dat
-Planck_Blue: unWISExPlanck-PR4_blue_baseline_Clgg+Clkk+Clkg.dat
-Planck_Green: unWISExPlanck-PR4_green_baseline_Clgg+Clkk+Clkg.dat
+Blue_ACT: unWISExACT-DR6_blue_baseline_Clgg+Clkk+Clkg.dat
+Green_ACT: unWISExACT-DR6_green_baseline_Clgg+Clkk+Clkg.dat
+Blue_Planck: unWISExPlanck-PR4_blue_baseline_Clgg+Clkk+Clkg.dat
+Green_Planck: unWISExPlanck-PR4_green_baseline_Clgg+Clkk+Clkg.dat
 
 ACT_Clkk: clkk_bandpowers_act.txt
 Planck_Clkk: clkk_bandpowers_planck.txt

@@ -3,17 +3,11 @@ from scipy.interpolate import InterpolatedUnivariateSpline
 
 class BiasEvolution(object):
     def __init__(self, path):
-        try:
-            data = np.loadtxt(path, delimiter=",")
-            b1_data = data[:,[0,1]]
-            b2_data = data[:,[0,2]]
-            b3_data = np.zeros_like(b1_data)
-            bs_data = data[:,[0,3]]
-        except:
-            b1_data = self._sort(np.loadtxt(f"{path}b1_L.csv", skiprows=1, delimiter=","))
-            b2_data = self._sort(np.loadtxt(f"{path}b2_L.csv", skiprows=1, delimiter=","))
-            b3_data = self._sort(np.loadtxt(f"{path}b3_L.csv", skiprows=1, delimiter=","))
-            bs_data = self._sort(np.loadtxt(f"{path}bs_L.csv", skiprows=1, delimiter=","))
+        data = np.loadtxt(path, delimiter=",")
+        b1_data = data[:,[0,1]]
+        b2_data = data[:,[0,2]]
+        b3_data = np.zeros_like(b1_data)
+        bs_data = data[:,[0,3]]
 
         self.__splinesb2 = self.__spline(b1_data, b2_data)
         self.__splinesb3 = self.__spline(b1_data, b3_data)

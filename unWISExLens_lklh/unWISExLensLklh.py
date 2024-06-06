@@ -237,9 +237,9 @@ class unWISExLensLklh(Likelihood):
                     covmat[np.sum(n_sample_bpw[:j + len(self.samples)]):np.sum(n_sample_bpw[:j + 1 + len(self.samples)]), np.sum(n_sample_bpw[:i + len(self.samples)]):np.sum(n_sample_bpw[:i + 1 + len(self.samples)])] = cross_cov.T  # / h_factor
 
         if self.apply_hartlap_correction:
-            if 'ACT_Blue' in self.samples or 'ACT_Green' in self.samples:
+            if 'Blue_ACT' in self.samples or 'Green_ACT' in self.samples:
                 nsims_min = 400
-            elif 'Planck_Blue' in self.samples or 'Planck_Green' in self.samples or ('Planck' in self.lensing_auto_spectrum_samples and self.include_lensing_auto_spectrum):
+            elif 'Blue_Planck' in self.samples or 'Green_Planck' in self.samples or ('Planck' in self.lensing_auto_spectrum_samples and self.include_lensing_auto_spectrum):
                 nsims_min = 480
             else:
                 nsims_min = 798
