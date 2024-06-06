@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 
-class LensingNormCorrectionHelper(object):
+class LensingLklhCorrectionHelper(object):
 
     def __init__(self, clTEB_fid, clkk_fid, norm_fid, dNorm_dCl, dN1_dCl, dN1_dClkk):
 
@@ -56,11 +56,11 @@ class LensingNormCorrectionHelper(object):
         return self.__Lmax
 
 
-class LensingNormCorrection(Theory):
+class LensingLklhCorrection(Theory):
 
     lklh_corr_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data/aux_data/lklh_corr")
 
-    norm_correction_paths = {'Blue_ACT$Green_ACT$ACT': {'fid_cls': 'cosmo2017_10K_acc3_lensedCls.dat',
+    lklh_correction_paths = {'Blue_ACT$Green_ACT$ACT': {'fid_cls': 'cosmo2017_10K_acc3_lensedCls.dat',
                                                         'phi_cls': 'cosmo2017_10K_acc3_lenspotentialCls.dat',
                                                         'dNorm_dCl': 'norm_kk_correction_matrix_Lmin0_Lmax4000_new.npy',
                                                         'fAL': 'n0mv_fiducial_lmin600_lmax3000_Lmin0_Lmax4000.txt',
@@ -82,37 +82,37 @@ class LensingNormCorrection(Theory):
                                                                 },
                              }
 
-    _norm_correction_modules = {}
+    _lklh_correction_modules = {}
     _lmax_TEB = 0
     _Lmax_kk = 0
-    _norm_correction_sample_module_mapping = {}
+    _lklh_correction_sample_module_mapping = {}
 
     def initialize(self):
 
-        for key in self.norm_correction_paths:
-            f_ls, f_tt, f_ee, f_bb, f_te = np.loadtxt(self.lklh_corr_base_path + self.norm_correction_paths[key]['fid_cls'], unpack=True)
+        for key in self.lklh_correction_paths:
+            f_ls, f_tt, f_ee, f_bb, f_te = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['fid_cls']), unpack=True)
             f_tt = f_tt / (f_ls * (f_ls + 1.)) * 2. * np.pi
             f_ee = f_ee / (f_ls * (f_ls + 1.)) * 2. * np.pi
             f_bb = f_bb / (f_ls * (f_ls + 1.)) * 2. * np.pi
             f_te = f_te / (f_ls * (f_ls + 1.)) * 2. * np.pi
 
-            fd_ls, f_dd = np.loadtxt(self.lklh_corr_base_path + self.norm_correction_paths[key]['phi_cls'], unpack=True, usecols=[0, 5])
+            fd_ls, f_dd = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['phi_cls']), unpack=True, usecols=[0, 5])
             f_kk = f_dd * 2. * np.pi / 4.
 
-            dNorm_dCl = np.load(self.lklh_corr_base_path + self.norm_correction_paths[key]['dNorm_dCl'])
-            fAL_ls, fAL = np.loadtxt(self.lklh_corr_base_path + self.norm_correction_paths[key]['fAL'])
-            dN1_dkk = np.loadtxt(self.lklh_corr_base_path + self.norm_correction_paths[key]['dN1_dkk'])
+            dNorm_dCl = np.load(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['dNorm_dCl']))
+            fAL_ls, fAL = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['fAL']))
+            dN1_dkk = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['dN1_dkk']))
             dN1_dCl = []
             for spec in ['tt', 'ee', 'bb', 'te']:
-                dN1_dCl.append(np.loadtxt(self.lklh_corr_base_path + self.norm_correction_paths[key]['dN1_dCl'][spec]))
+                dN1_dCl.append(np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['dN1_dCl'][spec])))
 
-            self._norm_correction_modules[key] = LensingNormCorrectionHelper(np.array([f_tt, f_ee, f_bb, f_te]), f_kk, fAL, dNorm_dCl, np.array(dN1_dCl), dN1_dkk)
+            self._lklh_correction_modules[key] = LensingLklhCorrectionHelper(np.array([f_tt, f_ee, f_bb, f_te]), f_kk, fAL, dNorm_dCl, np.array(dN1_dCl), dN1_dkk)
 
-        for key in self._norm_correction_modules.keys():
-            self._lmax_TEB = max([self._lmax_TEB, self._norm_correction_modules[key].get_lmax()])
-            self._Lmax_kk = max([self._Lmax_kk, self._norm_correction_modules[key].get_Lmax()])
+        for key in self._lklh_correction_modules.keys():
+            self._lmax_TEB = max([self._lmax_TEB, self._lklh_correction_modules[key].get_lmax()])
+            self._Lmax_kk = max([self._Lmax_kk, self._lklh_correction_modules[key].get_Lmax()])
             for s in key.split("$"):
-                self._norm_correction_sample_module_mapping[s] = key
+                self._lklh_correction_sample_module_mapping[s] = key
 
     def initialize_with_provider(self, provider):
         """
@@ -124,7 +124,7 @@ class LensingNormCorrection(Theory):
     def must_provide(self, **requirements):
         requires = {}
 
-        if 'lensing_norm_correction' in requirements:
+        if 'lensing_lklh_correction' in requirements:
             requires['Cl'] = {'tt': self._lmax_TEB, 'te': self._lmax_TEB, 'ee': self._lmax_TEB, 'bb': self._lmax_TEB}
 
         return requires
@@ -133,14 +133,14 @@ class LensingNormCorrection(Theory):
 
         cl = self.provider.get_Cl(ell_factor=False, units='FIRASmuK2')
 
-        state['lensing_norm_correction'] = {}
+        state['lensing_lklh_correction'] = {}
         cl_TEB = np.array([cl['tt'], cl['ee'], cl['bb'], cl['te']])
-        for key in self._norm_correction_modules.keys():
-            state['lensing_norm_correction'][key] = self._norm_correction_modules[key].compute_corrections(cl_TEB)
+        for key in self._lklh_correction_modules.keys():
+            state['lensing_lklh_correction'][key] = self._lklh_correction_modules[key].compute_corrections(cl_TEB)
 
-    def get_lensing_norm_correction(self, cls, sample, cross_spectrum=True):
-        correction = self._current_state['lensing_norm_correction'][self._norm_correction_sample_module_mapping[sample]]
-        return self._norm_correction_modules[self._norm_correction_sample_module_mapping[sample]].apply_corrections(cls, *correction, is_cross=cross_spectrum)
+    def get_lensing_lklh_correction(self, cls, sample, cross_spectrum=True):
+        correction = self._current_state['lensing_lklh_correction'][self._lklh_correction_sample_module_mapping[sample]]
+        return self._lklh_correction_modules[self._lklh_correction_sample_module_mapping[sample]].apply_corrections(cls, *correction, is_cross=cross_spectrum)
 
     def get_Lmax_kk(self, sample):
         return self._Lmax_kk
