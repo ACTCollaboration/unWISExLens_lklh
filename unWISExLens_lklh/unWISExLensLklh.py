@@ -261,8 +261,8 @@ class unWISExLensLklh(Likelihood):
         """
          return dictionary specifying quantities calculated by a theory code are needed
         """
-        if len(self.samples)>0:
-            reqs = {'cls':{'ell_vals':self._ell_vals, 'samples': np.unique([s.split("_")[0] for s in self.samples])}}
+        if len(self.samples) > 0:
+            reqs = {'cls': {'ell_vals': self._ell_vals, 'samples': np.unique([s.split("_")[0] for s in self.samples])}}
         else:
             reqs = {}
 
@@ -273,7 +273,7 @@ class unWISExLensLklh(Likelihood):
                 reqs['clkk'] = {'ell_vals': self._ell_vals_kk}
 
         if self.want_lensing_lklh_correction:
-            reqs['lensing_lklh_correction'] = None
+            reqs['lensing_lklh_correction'] = {'samples': self.samples + self.lensing_auto_spectrum_samples}
 
         return reqs
 
