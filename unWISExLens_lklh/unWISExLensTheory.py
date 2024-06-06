@@ -23,7 +23,7 @@ from .auxiliary.bias_coevolution import BiasEvolution
 class unWISExLensTheory(Theory):
     stop_at_error = True
 
-    data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data")
+    path = None
 
     zmax = 3.0
     zmin = 0.0
@@ -80,6 +80,11 @@ class unWISExLensTheory(Theory):
 
     def initialize(self):
         """called from __init__ to initialize"""
+
+        if self.path is None:
+            self.data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data")
+        else:
+            self.data_base_path = self.path
 
         self.log.info("Getting CLEFT helpers and interpolations ...")
         if self.use_cleft and self.cleft_interp_helper is None:

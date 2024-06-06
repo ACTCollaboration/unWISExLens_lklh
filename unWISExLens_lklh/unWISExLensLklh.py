@@ -45,7 +45,7 @@ class unWISExLensLklh(Likelihood):
         """
 
         if self.path is None:
-            self.data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data")
+            self.data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data")
         else:
             self.data_base_path = self.path
 
@@ -136,7 +136,7 @@ class unWISExLensLklh(Likelihood):
 
             self._ell_conds.append((cond_gg, cond_kg))
 
-            data = np.loadtxt(os.path.join(self.data_base_path, data_filename_dict[s]))
+            data = np.loadtxt(os.path.join(self.data_base_path, f"bandpowers/{data_filename_dict[s]}"))
             data_ells = np.round(data[:, 0], 10)
             ell_selection_gg = [data_ells[j] in np.round(self._binning_function_gg[i].get_binned_ell_vals()[cond_gg], 10) for j in range(len(data_ells))]
             ell_selection_kg = [data_ells[j] in np.round(self._binning_function_kg[i].get_binned_ell_vals()[cond_kg], 10) for j in range(len(data_ells))]
@@ -152,7 +152,7 @@ class unWISExLensLklh(Likelihood):
                 self._binning_function_kk.append(MatrixPowerSpectrumBinning(binning_matrix))
 
                 self._ell_conds_kk.append((self.lranges_kk[s][0] < self._binning_function_kk[i].get_binned_ell_vals()) & (self._binning_function_kk[i].get_binned_ell_vals() < self.lranges_kk[s][1]))
-                data = np.loadtxt(os.path.join(self.data_base_path, data_filename_dict[s]))
+                data = np.loadtxt(os.path.join(self.data_base_path, f"bandpowers/{data_filename_dict[s]}"))
                 self._ell_selections_kk.append(self._ell_conds_kk[i])  # this could be changed in the future for the case that the data provided doesn't have the same dimensions as the output of the theory code
                 self._data_kk.append(data[self._ell_selections_kk[i]])
 
