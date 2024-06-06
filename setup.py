@@ -13,5 +13,4 @@ setup(name="unWISExLens_lklh",
       zip_safe=False,  # set to false if you want to easily access bundled package data files
       packages=['unWISExLens_lklh'],
       package_data={'unWISExLens_lklh': ['*.yaml', '*.bibtex', 'data/*', 'data/**/*']},
-      # tests_require=['camb>=1.0.5']
       )

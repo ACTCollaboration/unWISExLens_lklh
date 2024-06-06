@@ -106,8 +106,6 @@ class LensingNormCorrection(Theory):
             for spec in ['tt', 'ee', 'bb', 'te']:
                 dN1_dCl.append(np.loadtxt(self.lklh_corr_base_path + self.norm_correction_paths[key]['dN1_dCl'][spec]))
 
-            #fAL[2:] /= (fAL_ls[2:] * (fAL_ls[2:] + 1) / 2) ** 2
-            #fAL[:2] = 0
             self._norm_correction_modules[key] = LensingNormCorrectionHelper(np.array([f_tt, f_ee, f_bb, f_te]), f_kk, fAL, dNorm_dCl, np.array(dN1_dCl), dN1_dkk)
 
         for key in self._norm_correction_modules.keys():
@@ -123,13 +121,6 @@ class LensingNormCorrection(Theory):
         """
         self.provider = provider
 
-    def get_requirements(self):
-        """
-        Return dictionary of derived parameters or other quantities that are needed
-        by this component and should be calculated by another theory class.
-        """
-        return { }
-
     def must_provide(self, **requirements):
         requires = {}
 
@@ -137,9 +128,6 @@ class LensingNormCorrection(Theory):
             requires['Cl'] = {'tt': self._lmax_TEB, 'te': self._lmax_TEB, 'ee': self._lmax_TEB, 'bb': self._lmax_TEB}
 
         return requires
-
-    def get_can_provide_params(self):
-        return []
 
     def calculate(self, state, want_derived=True, **params_values_dict):
 

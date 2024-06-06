@@ -10,7 +10,7 @@ classifiers = [
 	"License :: OSI Approved :: BSD License",
 ]
 dynamic = ["version", "description"]
-dependencies = ["numpy >=1", "scipy >=1", "cobaya >=3", "healpy"]
+dependencies = ["numpy >=1", "scipy >=1", "cobaya >=3", "healpy", "camb >=1.5"]
 
 [project.urls]
 Source = "https://github.com/ACTCollaboration/unWISExLens_lklh"

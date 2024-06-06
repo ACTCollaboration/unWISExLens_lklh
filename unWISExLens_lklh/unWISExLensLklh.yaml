@@ -1,0 +1,59 @@
+samples:
+    - Blue_ACT
+    - Green_ACT
+    - Blue_Planck
+    - Green_Planck
+lensing_auto_spectrum_samples:
+    - ACT
+    - Planck
+
+lranges_gg:
+    Blue_ACT:
+        - 100
+        - 402
+    Green_ACT:
+        - 100
+        - 402
+    Blue_Planck:
+        - 100
+        - 402
+    Green_Planck:
+        - 100
+        - 402
+lranges_kg:
+    Blue_ACT:
+        - 51
+        - 402
+    Green_ACT:
+        - 51
+        - 402
+    Blue_Planck:
+        - 51
+        - 402
+    Green_Planck:
+        - 51
+        - 402
+lranges_kk:
+    ACT:
+        - 40
+        - 763
+    Planck:
+        - 8
+        - 400
+
+scale_cleft_b2: False
+shift_cleft_b2: True
+scale_cleft_bs: False
+shift_cleft_bs: True
+scale_cleft_b3: False
+shift_cleft_b3: False
+
+do_pca_dndz_marg: True
+apply_hartlap_correction: True
+theory_eval_kwargs: null
+interpolate_cls: True
+cl_interp_N: 256
+
+include_lensing_auto_spectrum: True
+lensing_auto_spectrum_from_camb: True
+want_lensing_norm_correction: False

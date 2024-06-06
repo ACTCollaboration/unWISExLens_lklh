@@ -1,9 +1,9 @@
 import numpy as np
-from .model_helpers_unWISExACT import cosmo_from_camb, dNdz
+from .model_helpers_unWISExLens import cosmo_from_camb, dNdz
 from ..auxiliary.pk_interpolator import PowerSpectrumInterpolator
 
 
-class unWISExACT_theory_model(object):
+class unWISExLens_theory_model(object):
     """
     Parameters
     ----------

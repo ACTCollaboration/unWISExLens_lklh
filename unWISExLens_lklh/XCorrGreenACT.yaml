@@ -1,0 +1,6 @@
+samples:
+    - Green_ACT
+include_lensing_auto_spectrum: False
+
+params: !defaults [../param_prior_files/galaxy_nuisance_params_unWISExACT-DR6_green.yaml]
+prior: !defaults [../param_prior_files/galaxy_dndz_pca_params_unWISExACT-DR6_green.yaml]

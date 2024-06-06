@@ -1,10 +1,10 @@
 import numpy as np
-from .model_helpers_unWISExACT import cosmo_from_camb, dNdz
+from .model_helpers_unWISExLens import cosmo_from_camb, dNdz
 from ..auxiliary.pk_interpolator import PowerSpectrumInterpolator
-from .unWISExkappa_model import unWISExACT_theory_model as base_model
+from .unWISExkappa_model import unWISExLens_theory_model as base_model
 
 
-class unWISExACT_theory_model(base_model):
+class unWISExLens_theory_model(base_model):
 
     def __init__(self, want_poly_marg=False, *args, **kwargs):
 

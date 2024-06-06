@@ -1,0 +1,6 @@
+Blue_ACT_pca_0_prior: 'lambda Blue_ACT_pca_0: stats.skewnorm.logpdf(Blue_ACT_pca_0,
+  1.6115008281892145, -0.5843837663087972, 0.8602264154044552)'
+Blue_ACT_pca_1_prior: 'lambda Blue_ACT_pca_1: stats.skewnorm.logpdf(Blue_ACT_pca_1,
+  2.9399737162868362, -0.3985951242854526, 0.5388544397795002)'
+Blue_ACT_pca_2_prior: 'lambda Blue_ACT_pca_2: stats.skewnorm.logpdf(Blue_ACT_pca_2,
+  1.2668299127899532, -0.14460224245714698, 0.23295304624504373)'

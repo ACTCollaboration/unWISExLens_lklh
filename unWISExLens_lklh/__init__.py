@@ -2,6 +2,6 @@
 __author__ = ["Gerrit S. Farren"]
 __version__ = "0.1"
 
-from .unWISExLens_lklh import *
-from .unWISExLens_theory import *
-from .lensing_norm_correction_helper import *
+from .unWISExLensLklh import *
+from .unWISExLensTheory import *
+from .lensing_norm_correction import *

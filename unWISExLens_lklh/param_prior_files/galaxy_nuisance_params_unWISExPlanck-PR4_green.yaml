@@ -1,0 +1,108 @@
+b_Green_Planck:
+    prior:
+      min: 0.7
+      max: 4.2
+    ref:
+      dist: norm
+      loc: 2.3
+      scale: 0.1
+    proposal: 0.17
+    latex: b_{\rm{Green,Planck}}
+log10SN_Green_Planck:
+    prior:
+      dist: norm
+      loc: -6.79
+      scale: 0.2
+    ref:
+      dist: norm
+      loc: -6.79
+      scale: 0.05
+    proposal: 0.2
+    latex: \log_{10} P^{\rm{shot}}_{\rm{Green,Planck}}
+s_Green_Planck:
+    prior:
+      dist: norm
+      loc: 0.653
+      scale: 0.0653
+    ref:
+      dist: norm
+      loc: 0.653
+      scale: 0.001
+    proposal: 0.0653
+    latex: s^{\rm{mag}}_{\rm{Green,Planck}}
+  n_shot_Green_Planck:
+    value: 'lambda log10SN_Green_Planck: 10**log10SN_Green_Planck'
+    latex: P^{\rm{shot}}_{\rm{Green,Planck}}
+    derived: true
+Green_Planck_pca_0:
+    prior:
+      min: -1.5346359060519714
+      max: 1.6912358168787751
+    ref:
+      dist: norm
+      loc: -0.30320235632661185
+      scale: 0.11460303294257823
+    proposal: 0.5730151647128912
+    latex: c^{\rm{pca}}_{\rm{Green,Planck},0}
+Green_Planck_pca_1:
+    prior:
+      min: -1.395653168202724
+      max: 1.5799444296016234
+    ref:
+      dist: norm
+      loc: -0.3042716635545827
+      scale: 0.10826590380072984
+    proposal: 0.5413295190036492
+    latex: c^{\rm{pca}}_{\rm{Green,Planck},1}
+Green_Planck_pca_2:
+    prior:
+      min: -0.844022793076942
+      max: 1.2100473586752079
+    ref:
+      dist: norm
+      loc: -0.30615305724122277
+      scale: 0.08711901895942262
+    proposal: 0.43559509479711306
+    latex: c^{\rm{pca}}_{\rm{Green,Planck},2}
+Green_Planck_pca_3:
+    prior:
+      min: -0.7859058192550412
+      max: 0.8060698678719819
+    ref:
+      dist: norm
+      loc: -0.0945228819723003
+      scale: 0.051863175581384556
+    proposal: 0.2593158779069228
+    latex: c^{\rm{pca}}_{\rm{Green,Planck},3}
+Green_Planck_pca_4:
+    prior:
+      min: -0.5341238396391665
+      max: 0.9069798023998241
+    ref:
+      dist: norm
+      loc: -0.23779156954362762
+      scale: 0.06577716099374567
+    proposal: 0.3288858049687283
+    latex: c^{\rm{pca}}_{\rm{Green,Planck},4}
+Green_Planck_shift_cleft_cb2:
+    prior:
+      dist: norm
+      loc: 0.41552846311201563
+      scale: 0.41552846311201563
+    ref:
+      dist: norm
+      loc: 0.41552846311201563
+      scale: 0.41552846311201563
+    proposal: 0.41552846311201563
+    latex: c^{\rm{CLEFT},b_2}_{\rm{Green,Planck}, \rm{shift}}
+Green_Planck_shift_cleft_cbs:
+    prior:
+      dist: norm
+      loc: 0.21990237272388719
+      scale: 0.4994594074812951
+    ref:
+      dist: norm
+      loc: 0.21990237272388719
+      scale: 0.4994594074812951
+    proposal: 0.4994594074812951
+    latex: c^{\rm{CLEFT},b_s}_{\rm{Green,Planck}, \rm{shift}}

@@ -1,8 +1,9 @@
 import numpy as np
 from scipy import special
 from ..auxiliary.pk_interpolator import PowerSpectrumInterpolator
-from .model_helpers_unWISExACT import cosmo_from_camb
+from .model_helpers_unWISExLens import cosmo_from_camb
 from scipy.interpolate import interp1d as interpolate
+
 
 class CrossRedshiftCosmoCorrection(object):
 
@@ -17,6 +18,7 @@ class CrossRedshiftCosmoCorrection(object):
 
     def __call__(self, *args, **kwargs):
         raise NotImplementedError()
+
 
 class CrossRedshiftCosmoCorrectionExact(CrossRedshiftCosmoCorrection):
 
@@ -69,6 +71,7 @@ class CrossRedshiftCosmoCorrectionExact(CrossRedshiftCosmoCorrection):
 
     def __call__(self, cosmo, pk, z_vals):
         return self.correction_factor(cosmo, pk, z_vals)
+
 
 class CrossRedshiftCosmoCorrectionApprox(CrossRedshiftCosmoCorrection):
 

@@ -1,0 +1,88 @@
+b_Blue_Planck:
+    prior:
+      min: 0.5
+      max: 3.9
+    ref:
+      dist: norm
+      loc: 1.6
+      scale: 0.1
+    proposal: 0.2
+    latex: b_{\rm{Blue,Planck}}
+log10SN_Blue_Planck:
+    prior:
+      dist: norm
+      loc: -7.05
+      scale: 0.2
+    ref:
+      dist: norm
+      loc: -7.05
+      scale: 0.05
+    proposal: 0.2
+    latex: \log_{10} P^{\rm{shot}}_{\rm{Blue,Planck}}
+s_Blue_Planck:
+    prior:
+      dist: norm
+      loc: 0.455
+      scale: 0.0455
+    ref:
+      dist: norm
+      loc: 0.455
+      scale: 0.001
+    proposal: 0.0455
+    latex: s^{\rm{mag}}_{\rm{Blue,Planck}}
+n_shot_Blue_Planck:
+    value: 'lambda log10SN_Blue_Planck: 10**log10SN_Blue_Planck'
+    latex: P^{\rm{shot}}_{\rm{Blue,Planck}}
+    derived: true
+Blue_Planck_pca_0:
+    prior:
+      min: -1.8118917687524185
+      max: 2.409854837628588
+    ref:
+      dist: norm
+      loc: -0.5843837663087972
+      scale: 0.17204528308089104
+    proposal: 0.8602264154044552
+    latex: c^{\rm{pca}}_{\rm{Blue,Planck},0}
+Blue_Planck_pca_1:
+    prior:
+      min: -0.8365722311674397
+      max: 1.4770259179874363
+    ref:
+      dist: norm
+      loc: -0.3985951242854526
+      scale: 0.10777088795590004
+    proposal: 0.5388544397795002
+    latex: c^{\rm{pca}}_{\rm{Blue,Planck},1}
+Blue_Planck_pca_2:
+    prior:
+      min: -0.5450895913502375
+      max: 0.6662504393312214
+    ref:
+      dist: norm
+      loc: -0.14460224245714698
+      scale: 0.04659060924900875
+    proposal: 0.23295304624504373
+    latex: c^{\rm{pca}}_{\rm{Blue,Planck},2}
+Blue_Planck_shift_cleft_cb2:
+    prior:
+      dist: norm
+      loc: 0.5551969885793376
+      scale: 0.5551969885793376
+    ref:
+      dist: norm
+      loc: 0.5551969885793376
+      scale: 0.5551969885793376
+    proposal: 0.5551969885793376
+    latex: c^{\rm{CLEFT},b_2}_{\rm{Blue,Planck}, \rm{shift}}
+Blue_Planck_shift_cleft_cbs:
+    prior:
+      dist: norm
+      loc: 0.16830370991953963
+      scale: 0.2939274475364879
+    ref:
+      dist: norm
+      loc: 0.16830370991953963
+      scale: 0.2939274475364879
+    proposal: 0.2939274475364879
+    latex: c^{\rm{CLEFT},b_s}_{\rm{Blue,Planck}, \rm{shift}}

@@ -11,16 +11,16 @@ from .auxiliary.dN_dz_aux import dN_dz_Helper
 from .auxiliary.pk_interpolator import PowerSpectrumInterpolator, ScaledPowerSpectrumInterpolator
 from .auxiliary.auxiliary_functions import combine_inputs
 
-from .theory_modules.unWISExkappa_model import unWISExACT_theory_model
-from .theory_modules.unWISExkappa_model_freeCLEFT import unWISExACT_theory_model as unWISExACT_theory_model_new
+from .theory_modules.unWISExkappa_model import unWISExLens_theory_model
+from .theory_modules.unWISExkappa_model_freeCLEFT import unWISExLens_theory_model as unWISExACT_theory_model_new
 
-from .theory_modules.model_helpers_unWISExACT import cosmo_from_camb, dNdz, CleftInterpolationHelper, CleftInterpolationHelperFreeCleft
+from .theory_modules.model_helpers_unWISExLens import cosmo_from_camb, dNdz, CleftInterpolationHelper, CleftInterpolationHelperFreeCleft
 from .theory_modules.cross_dNdz_cosmo_correction import CrossRedshiftCosmoCorrectionExact, CrossRedshiftCosmoCorrectionApprox
 
 from .auxiliary.bias_coevolution import BiasEvolution
 
 
-class unWISExLens_theory(Theory):
+class unWISExLensTheory(Theory):
     stop_at_error = True
 
     data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data")
@@ -222,7 +222,7 @@ class unWISExLens_theory(Theory):
             if self.use_free_cleft_model:
                 self._theory_code = unWISExACT_theory_model_new(**theory_params)
             else:
-                self._theory_code = unWISExACT_theory_model(**theory_params)
+                self._theory_code = unWISExLens_theory_model(**theory_params)
 
             self.load_sample_data()
 

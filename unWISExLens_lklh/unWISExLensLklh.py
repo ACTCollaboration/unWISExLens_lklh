@@ -3,47 +3,15 @@ import warnings
 import numpy as np
 import healpy as hp
 from cobaya.likelihood import Likelihood
-import os
-
 from cobaya.yaml import yaml_load_file
+import os
 
 from .auxiliary.auxiliary_functions import density_space, select_from_matrix
 from .auxiliary.binning_helpers import PowerSpectrumBinning, MatrixPowerSpectrumBinning, NaMasterPowerSpectrumBinning
 
 
-class unWISExLens_lklh(Likelihood):
+class unWISExLensLklh(Likelihood):
     stop_at_error = True
-    params = {}
-
-    data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data")
-
-    nsims = None
-    samples = ['Blue_ACT', 'Green_ACT', 'Blue_Planck', 'Green_Planck']
-    lranges_gg = {'Blue_ACT': (100, 402), 'Green_ACT': (100, 402), 'Blue_Planck': (100, 402), 'Green_Planck': (100, 402)}
-    lranges_kg = {'Blue_ACT': (51, 402), 'Green_ACT': (51, 402), 'Blue_Planck': (51, 402), 'Green_Planck': (51, 402)}
-    lranges_kk = {'ACT': (40, 763), 'Planck': (8, 400)}
-
-    do_pca_dndz_marg = True
-
-    scale_cleft_b2 = False
-    shift_cleft_b2 = True
-    scale_cleft_bs = False
-    shift_cleft_bs = True
-    scale_cleft_b3 = False
-    shift_cleft_b3 = False
-
-    apply_hartlap_correction = True
-
-    theory_eval_kwargs = {}
-
-    interpolate_cls = True
-    cl_interp_N = 256
-
-    include_lensing_auto_spectrum = False
-    lensing_auto_spectrum_from_camb = True
-    lensing_auto_spectrum_samples = ['ACT', 'Planck']
-
-    want_lensing_norm_correction = False
 
     _binning_function_gg = []  # will default to simply binning the spectrum by taking the unweighted average in every bin
     _binning_function_kg = []
@@ -76,6 +44,11 @@ class unWISExLens_lklh(Likelihood):
 
          e.g. here we load some data file
         """
+
+        if self.path is None:
+            self.data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "data")
+        else:
+            self.data_base_path = self.path
 
         # clear
         self._binning_function_gg = []
@@ -337,22 +310,22 @@ class unWISExLens_lklh(Likelihood):
         else:
             cleft_coeff = None
 
-        if len(self.samples)>0:
+        residuals = []
+        if len(self.samples) > 0:
             gg, kg = self.provider.get_cls(ell=self._ell_vals, bias=bias_list, s_mag=s_mag_list, pca_coeff=pca_coeff_list, cleft_coeff=cleft_coeff, samples=[s.split("_")[0] for s in self.samples], do_dndz_pca=self.do_pca_dndz_marg, **self.theory_eval_kwargs)
 
-        residuals = []
-        for i,s in enumerate(self.samples):
-            binned_gg = self._binning_function_gg[i](np.interp(self._binning_function_gg[i].get_input_ells(), self._ell_vals, gg[i]) * self._pixwin_correction_gg[self._binning_function_gg[i].get_input_ells()], white_noise=n_shot_list[i])[self._ell_conds[i][0]]
+            for i, s in enumerate(self.samples):
+                binned_gg = self._binning_function_gg[i](np.interp(self._binning_function_gg[i].get_input_ells(), self._ell_vals, gg[i]) * self._pixwin_correction_gg[self._binning_function_gg[i].get_input_ells()], white_noise=n_shot_list[i])[self._ell_conds[i][0]]
 
-            all_ell_kg = np.interp(self._binning_function_kg[i].get_input_ells(), self._ell_vals, kg[i])
-            if self.want_lensing_norm_correction:
-                all_ell_kg = self.provider.get_lensing_norm_correction(all_ell_kg, s, cross_spectrum=True)
+                all_ell_kg = np.interp(self._binning_function_kg[i].get_input_ells(), self._ell_vals, kg[i])
+                if self.want_lensing_norm_correction:
+                    all_ell_kg = self.provider.get_lensing_norm_correction(all_ell_kg, s, cross_spectrum=True)
 
-            binned_kg = self._binning_function_kg[i](all_ell_kg * self.pixwin_correction_kg[self._binning_function_kg[i].get_input_ells()])[self._ell_conds[i][1]]
+                binned_kg = self._binning_function_kg[i](all_ell_kg * self.pixwin_correction_kg[self._binning_function_kg[i].get_input_ells()])[self._ell_conds[i][1]]
 
-            residual_gg = self._data_gg[i] - binned_gg
-            residual_kg = self._data_kg[i] - binned_kg
-            residuals.append(np.concatenate([residual_gg, residual_kg]))
+                residual_gg = self._data_gg[i] - binned_gg
+                residual_kg = self._data_kg[i] - binned_kg
+                residuals.append(np.concatenate([residual_gg, residual_kg]))
 
         if self.include_lensing_auto_spectrum:
             if self.lensing_auto_spectrum_from_camb:
