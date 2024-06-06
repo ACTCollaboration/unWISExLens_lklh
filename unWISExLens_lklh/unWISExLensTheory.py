@@ -54,7 +54,7 @@ class unWISExLensTheory(Theory):
     xmatch_dN_dz_paths = {'Blue': 'aux_data/dndz/unWISE_blue_xmatch_dndz.txt', 'Green': 'aux_data/dndz/unWISE_green_xmatch_dndz.txt'}
     delta_dndz_pcs_paths = {'Blue': 'aux_data/dndz/unWISE_blue_delta_bdndz_pcs.dat', 'Green': 'aux_data/dndz/unWISE_green_delta_bdndz_pcs.dat'}
 
-    noise_bias_corr_paths = {'Blue': 'aux_data/noise_bias_correction/unWISE_blue_noise_bias_corr_free_cleft.dat', 'Green': 'aux_data/noise_bias_correction/unWISE_green_noise_bias_corr_free_cleft.dat', 'BluexGreen': 'aux_data/noise_bias_correction/unWISE_blueXgreen_noise_bias_corr_free_cleft.dat'}
+    noise_bias_corr_paths = {'Blue': 'aux_data/noise_bias_corrections/unWISE_blue_noise_bias_corr_free_cleft.npy', 'Green': 'aux_data/noise_bias_corrections/unWISE_green_noise_bias_corr_free_cleft.npy', 'BluexGreen': 'aux_data/noise_bias_corrections/unWISE_blueXgreen_noise_bias_corr_free_cleft.npy'}
 
     fid_bias_evol = {'Blue': 'lambda z:0.8 + 1.2*z', 'Green': 'lambda z: np.clip(1.6*z**2, 1, np.inf)'}
     _fid_bias_evol_list = []

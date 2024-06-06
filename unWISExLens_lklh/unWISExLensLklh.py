@@ -148,11 +148,11 @@ class unWISExLensLklh(Likelihood):
 
         if self.include_lensing_auto_spectrum:
             for i, s in enumerate(self.lensing_auto_spectrum_samples):
-                binning_matrix = np.loadtxt(os.path.join(self.data_base_path, f"aux_data/bandwindow_matrices/{binning_instructions[s]['binning_matrix_path']}"))
+                binning_matrix = np.loadtxt(os.path.join(self.data_base_path, f"aux_data/bandwindow_matrices/{binning_instructions[f'{s}_Clkk']['binning_matrix_path']}"))
                 self._binning_function_kk.append(MatrixPowerSpectrumBinning(binning_matrix))
 
                 self._ell_conds_kk.append((self.lranges_kk[s][0] < self._binning_function_kk[i].get_binned_ell_vals()) & (self._binning_function_kk[i].get_binned_ell_vals() < self.lranges_kk[s][1]))
-                data = np.loadtxt(os.path.join(self.data_base_path, f"bandpowers/{data_filename_dict[s]}"))
+                data = np.loadtxt(os.path.join(self.data_base_path, f"bandpowers/{data_filename_dict[f'{s}_Clkk']}"))
                 self._ell_selections_kk.append(self._ell_conds_kk[i])  # this could be changed in the future for the case that the data provided doesn't have the same dimensions as the output of the theory code
                 self._data_kk.append(data[self._ell_selections_kk[i]])
 
@@ -180,7 +180,7 @@ class unWISExLensLklh(Likelihood):
 
         for i, s in enumerate(self.samples):
 
-            cov = np.loadtxt(os.path.join(self.data_base_path, covmat_filename_dict[s]))
+            cov = np.loadtxt(os.path.join(self.data_base_path, f"covariances/{covmat_filename_dict[s]}"))
             ell_selection = np.concatenate(self._ell_selections[i])
             if cov.shape != (len(ell_selection), len(ell_selection)):
                 warnings.warn(f"Covmat and input shape are in disagreement! Using first {len(self._ell_selections[i][0])} and {len(self._ell_selections[i][1])} bins for Clgg and Clkg respectively")
@@ -194,9 +194,9 @@ class unWISExLensLklh(Likelihood):
                 j += i + 1
 
                 if f"{s}_X_{s2}" in covmat_filename_dict.keys():
-                    cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, covmat_filename_dict[f"{s}_X_{s2}"])), np.concatenate(self._ell_selections[i]), np.concatenate(self._ell_selections[j]))
+                    cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, f"covariances/{covmat_filename_dict[f'{s}_X_{s2}']}")), np.concatenate(self._ell_selections[i]), np.concatenate(self._ell_selections[j]))
                 elif f"{s2}_X_{s}" in covmat_filename_dict.keys():
-                    cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, covmat_filename_dict[f"{s2}_X_{s}"])), np.concatenate(self._ell_selections[j]), np.concatenate(self._ell_selections[i])).T
+                    cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, f"covariances/{covmat_filename_dict[f'{s2}_X_{s}']}")), np.concatenate(self._ell_selections[j]), np.concatenate(self._ell_selections[i])).T
                 else:
                     warnings.warn(f"Cross covariance between {s} and {s2} not provided.")
                     continue
@@ -206,14 +206,14 @@ class unWISExLensLklh(Likelihood):
 
         if self.include_lensing_auto_spectrum:
             for i, s in enumerate(self.lensing_auto_spectrum_samples):
-                cov = np.loadtxt(os.path.join(self.data_base_path, covmat_filename_dict[f"{s}_Clkk"]))
+                cov = np.loadtxt(os.path.join(self.data_base_path, f"covariances/{covmat_filename_dict[f'{s}_Clkk']}"))
 
                 covmat[np.sum(n_sample_bpw[:i + len(self.samples)]):np.sum(n_sample_bpw[:i + 1 + len(self.samples)]), np.sum(n_sample_bpw[:i + len(self.samples)]):np.sum(n_sample_bpw[:i + 1 + len(self.samples)])] = select_from_matrix(cov, self._ell_selections_kk[i])  # / h_factor
 
                 for j, s2 in enumerate(self.samples):
 
                     if f"{s}_Clkk_X_{s2}" in covmat_filename_dict.keys():
-                        cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, covmat_filename_dict[f"{s}_Clkk_X_{s2}"])), self._ell_selections_kk[i], np.concatenate(self._ell_selections[j]))
+                        cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, f"covariances/{covmat_filename_dict[f'{s}_Clkk_X_{s2}']}")), self._ell_selections_kk[i], np.concatenate(self._ell_selections[j]))
                     else:
                         warnings.warn(f"Cross covariance between clkk_{s} and {s2} not provided.")
                         continue
@@ -225,9 +225,9 @@ class unWISExLensLklh(Likelihood):
                     j += i + 1
 
                     if f"{s}_Clkk_X_{s2}_Clkk" in covmat_filename_dict.keys():
-                        cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, covmat_filename_dict[f"{s}_Clkk_X_{s2}_Clkk"])), self._ell_selections_kk[i], self._ell_selections_kk[j])
+                        cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, f"covariances/{covmat_filename_dict[f'{s}_Clkk_X_{s2}_Clkk']}")), self._ell_selections_kk[i], self._ell_selections_kk[j])
                     elif f"{s2}_Clkk_X_{s}_Clkk" in covmat_filename_dict.keys():
-                        cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, covmat_filename_dict[f"{s2}_Clkk_X_{s}_Clkk"])), self._ell_selections_kk[j], self._ell_selections_kk[i]).T
+                        cross_cov = select_from_matrix(np.loadtxt(os.path.join(self.data_base_path, f"covariances/{covmat_filename_dict[f'{s2}_Clkk_X_{s}_Clkk']}")), self._ell_selections_kk[j], self._ell_selections_kk[i]).T
                     else:
                         warnings.warn(f"Cross covariance between {s} and {s2} not provided.")
                         continue
