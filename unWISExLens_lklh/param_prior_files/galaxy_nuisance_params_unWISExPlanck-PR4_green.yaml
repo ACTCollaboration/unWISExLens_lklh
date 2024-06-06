@@ -30,7 +30,7 @@ s_Green_Planck:
       scale: 0.001
     proposal: 0.0653
     latex: s^{\rm{mag}}_{\rm{Green,Planck}}
-  n_shot_Green_Planck:
+n_shot_Green_Planck:
     value: 'lambda log10SN_Green_Planck: 10**log10SN_Green_Planck'
     latex: P^{\rm{shot}}_{\rm{Green,Planck}}
     derived: true
