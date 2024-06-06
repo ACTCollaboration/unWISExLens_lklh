@@ -11,7 +11,6 @@ from .auxiliary.binning_helpers import PowerSpectrumBinning, MatrixPowerSpectrum
 
 
 class unWISExLensLklh(Likelihood):
-    stop_at_error = True
 
     _binning_function_gg = []  # will default to simply binning the spectrum by taking the unweighted average in every bin
     _binning_function_kg = []
