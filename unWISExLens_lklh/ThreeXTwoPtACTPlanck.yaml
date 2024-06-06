@@ -8,5 +8,5 @@ lensing_auto_spectrum_samples:
     - Planck
 include_lensing_auto_spectrum: True
 
-params: !defaults [../param_prior_files/galaxy_nuisance_params_unWISExACT-DR6_blue, ../param_prior_files/galaxy_nuisance_params_unWISExACT-DR6_green, ../param_prior_files/galaxy_nuisance_params_unWISExPlanck-PR4_blue, ../param_prior_files/galaxy_nuisance_params_unWISExPlanck-PR4_green]
-prior: !defaults [../param_prior_files/galaxy_dndz_pca_params_unWISExACT-DR6_blue, ../param_prior_files/galaxy_dndz_pca_params_unWISExACT-DR6_green, ../param_prior_files/galaxy_dndz_pca_params_unWISExPlanck-PR4_blue, ../param_prior_files/galaxy_dndz_pca_params_unWISExPlanck-PR4_green]
+params: !defaults [param_prior_files/galaxy_nuisance_params_unWISExACT-DR6_blue, param_prior_files/galaxy_nuisance_params_unWISExACT-DR6_green, param_prior_files/galaxy_nuisance_params_unWISExPlanck-PR4_blue, param_prior_files/galaxy_nuisance_params_unWISExPlanck-PR4_green]
+prior: !defaults [param_prior_files/galaxy_dndz_pca_params_unWISExACT-DR6_blue, param_prior_files/galaxy_dndz_pca_params_unWISExACT-DR6_green, param_prior_files/galaxy_dndz_pca_params_unWISExPlanck-PR4_blue, param_prior_files/galaxy_dndz_pca_params_unWISExPlanck-PR4_green]

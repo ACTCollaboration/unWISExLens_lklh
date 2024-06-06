@@ -2,5 +2,5 @@ samples:
     - Blue_ACT
 include_lensing_auto_spectrum: False
 
-params: !defaults [../param_prior_files/galaxy_nuisance_params_unWISExACT-DR6_blue]
-prior: !defaults [../param_prior_files/galaxy_dndz_pca_params_unWISExACT-DR6_blue]
+params: !defaults [param_prior_files/galaxy_nuisance_params_unWISExACT-DR6_blue]
+prior: !defaults [param_prior_files/galaxy_dndz_pca_params_unWISExACT-DR6_blue]
