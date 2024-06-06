@@ -30,10 +30,6 @@ s_Blue_Planck:
       scale: 0.001
     proposal: 0.0455
     latex: s^{\rm{mag}}_{\rm{Blue,Planck}}
-n_shot_Blue_Planck:
-    value: 'lambda log10SN_Blue_Planck: 10**log10SN_Blue_Planck'
-    latex: P^{\rm{shot}}_{\rm{Blue,Planck}}
-    derived: true
 Blue_Planck_pca_0:
     prior:
       min: -1.8118917687524185

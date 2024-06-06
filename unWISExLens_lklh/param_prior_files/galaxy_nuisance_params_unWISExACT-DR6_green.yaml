@@ -36,10 +36,6 @@ s_Green_ACT:
     latex: s^{\rm{mag}}_{\rm{Green,ACT}}
     renames:
     - s_Green
-n_shot_Green_ACT:
-    value: 'lambda log10SN_Green_ACT: 10**log10SN_Green_ACT'
-    latex: P^{\rm{shot}}_{\rm{Green,ACT}}
-    derived: true
 Green_ACT_pca_0:
     prior:
       min: -1.5346359060519714

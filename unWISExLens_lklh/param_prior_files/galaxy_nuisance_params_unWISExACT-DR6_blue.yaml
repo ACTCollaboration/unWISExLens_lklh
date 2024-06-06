@@ -36,10 +36,6 @@ s_Blue_ACT:
     latex: s^{\rm{mag}}_{\rm{Blue,ACT}}
     renames:
     - s_Blue
-n_shot_Blue_ACT:
-    value: 'lambda log10SN_Blue_ACT: 10**log10SN_Blue_ACT'
-    latex: P^{\rm{shot}}_{\rm{Blue,ACT}}
-    derived: true
 Blue_ACT_pca_0:
     prior:
       min: -1.8118917687524185
