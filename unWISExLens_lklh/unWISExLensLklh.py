@@ -286,7 +286,7 @@ class unWISExLensLklh(Likelihood):
         """
 
         bias_list = [params_values['b_{}'.format(s)] for s in self.samples]
-        n_shot_list = [params_values['n_shot_{}'.format(s)] for s in self.samples]
+        n_shot_list = [10**params_values['log10SN_{}'.format(s)] for s in self.samples]
         s_mag_list = [params_values['s_{}'.format(s)] for s in self.samples]
 
         pca_coeff_list = None
@@ -320,7 +320,7 @@ class unWISExLensLklh(Likelihood):
                 if self.want_lensing_lklh_correction:
                     all_ell_kg = self.provider.get_lensing_lklh_correction(all_ell_kg, s, cross_spectrum=True)
 
-                binned_kg = self._binning_function_kg[i](all_ell_kg * self.pixwin_correction_kg[self._binning_function_kg[i].get_input_ells()])[self._ell_conds[i][1]]
+                binned_kg = self._binning_function_kg[i](all_ell_kg * self._pixwin_correction_kg[self._binning_function_kg[i].get_input_ells()])[self._ell_conds[i][1]]
 
                 residual_gg = self._data_gg[i] - binned_gg
                 residual_kg = self._data_kg[i] - binned_kg
