@@ -1,7 +1,7 @@
 from .unWISExLensLklh import unWISExLensLklh
 
 
-class ThreeXTwoPtACTPlanck(unWISExLensLklh):
+class ThreeXTwoACTPlanck(unWISExLensLklh):
     r"""
     Cross-correlation likelihood using unWISE galaxies and CMB lensing reconstructions from ACT DR6 and Planck PR4.
 

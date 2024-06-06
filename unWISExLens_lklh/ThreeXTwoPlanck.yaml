@@ -1,0 +1,10 @@
+path: null
+samples:
+    - Blue_Planck
+    - Green_Planck
+lensing_auto_spectrum_samples:
+    - Planck
+include_lensing_auto_spectrum: True
+
+params: !defaults [param_prior_files/galaxy_nuisance_params_unWISExPlanck-PR4_blue, param_prior_files/galaxy_nuisance_params_unWISExPlanck-PR4_green]
+prior: !defaults [param_prior_files/galaxy_dndz_pca_params_unWISExPlanck-PR4_blue, param_prior_files/galaxy_dndz_pca_params_unWISExPlanck-PR4_green]
