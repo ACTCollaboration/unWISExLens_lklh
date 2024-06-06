@@ -4,4 +4,4 @@ __version__ = "0.1"
 
 from .unWISExLensLklh import *
 from .unWISExLensTheory import *
-from .lensing_norm_correction import *
+from .lensing_lklh_correction import *

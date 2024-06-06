@@ -73,7 +73,7 @@ class unWISExLensLklh(Likelihood):
         self._pixwin_correction_kg = None
 
         data_filename_dict = yaml_load_file(os.path.join(os.path.abspath(os.path.dirname(__file__)), "config_files/data_filenames.yaml"))
-        if self.want_lensing_norm_correction:
+        if self.want_lensing_lklh_correction:
             covmat_filename_dict = yaml_load_file(os.path.join(os.path.abspath(os.path.dirname(__file__)), "config_files/covmat_filenames_baseline.yaml"))
         else:
             covmat_filename_dict = yaml_load_file(os.path.join(os.path.abspath(os.path.dirname(__file__)), "config_files/covmat_filenames_cmbmarg.yaml"))
@@ -159,7 +159,7 @@ class unWISExLensLklh(Likelihood):
             self._lmax_kk = np.max([self.lranges_kk[s][1] for s in self.lensing_auto_spectrum_samples])
             self._lmin_kk = np.min([self.lranges_kk[s][0] for s in self.lensing_auto_spectrum_samples])
 
-            if self.want_lensing_norm_correction:
+            if self.want_lensing_lklh_correction:
                 self._lmax_kk = 3000
                 self._lmin_kk = 0
 
@@ -272,8 +272,8 @@ class unWISExLensLklh(Likelihood):
             else:
                 reqs['clkk'] = {'ell_vals': self._ell_vals_kk}
 
-        if self.want_lensing_norm_correction:
-            reqs['lensing_norm_correction'] = None
+        if self.want_lensing_lklh_correction:
+            reqs['lensing_lklh_correction'] = None
 
         return reqs
 
@@ -317,8 +317,8 @@ class unWISExLensLklh(Likelihood):
                 binned_gg = self._binning_function_gg[i](np.interp(self._binning_function_gg[i].get_input_ells(), self._ell_vals, gg[i]) * self._pixwin_correction_gg[self._binning_function_gg[i].get_input_ells()], white_noise=n_shot_list[i])[self._ell_conds[i][0]]
 
                 all_ell_kg = np.interp(self._binning_function_kg[i].get_input_ells(), self._ell_vals, kg[i])
-                if self.want_lensing_norm_correction:
-                    all_ell_kg = self.provider.get_lensing_norm_correction(all_ell_kg, s, cross_spectrum=True)
+                if self.want_lensing_lklh_correction:
+                    all_ell_kg = self.provider.get_lensing_lklh_correction(all_ell_kg, s, cross_spectrum=True)
 
                 binned_kg = self._binning_function_kg[i](all_ell_kg * self._pixwin_correction_kg[self._binning_function_kg[i].get_input_ells()])[self._ell_conds[i][1]]
 
@@ -338,9 +338,9 @@ class unWISExLensLklh(Likelihood):
 
             for i,s in enumerate(self.lensing_auto_spectrum_samples):
 
-                if self.want_lensing_norm_correction:
+                if self.want_lensing_lklh_correction:
                     clkk_corrected = np.copy(clkk)
-                    clkk_corrected = self.provider.get_lensing_norm_correction(clkk_corrected, s, cross_spectrum=False)
+                    clkk_corrected = self.provider.get_lensing_lklh_correction(clkk_corrected, s, cross_spectrum=False)
                 else:
                     clkk_corrected = clkk
 
