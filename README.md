@@ -35,7 +35,7 @@ If you wish to be able to make changes to the likelihood for development, first 
     pip install -e . --user
 
 ## Data
-The bandpowers, covariances and auxiliary data for this likliehood is available for download [here](https://portal.nersc.gov/project/act/act_x_unWISE_xcorr+3x2pt/data_unWISExLens.zip). Download the data archive and extract it inside the cloned directory such that `unWISExLens_lklh/data/` contains three directories `bandpowers`, `covariances`, and `aux_data`.
+The bandpowers, covariances and auxiliary data for this likliehood is available for download [here](https://portal.nersc.gov/project/act/act_x_unWISE_xcorr+3x2pt/data_unWISExLens.tar.gz). Download the data archive and extract it inside the cloned directory such that `unWISExLens_lklh/data/` contains three directories `bandpowers`, `covariances`, and `aux_data`.
 
 ## Use with Cobaya
 
