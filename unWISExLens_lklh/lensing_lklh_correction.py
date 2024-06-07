@@ -61,25 +61,25 @@ class LensingLklhCorrection(Theory):
     lklh_corr_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data/aux_data/lklh_corr")
 
     lklh_correction_paths = {'ACT': {'fid_cls': 'cosmo2017_10K_acc3_lensedCls.dat',
-                                                        'phi_cls': 'cosmo2017_10K_acc3_lenspotentialCls.dat',
-                                                        'dNorm_dCl': 'norm_kk_correction_matrix_Lmin0_Lmax4000_new.npy',
-                                                        'fAL': 'n0mv_fiducial_lmin600_lmax3000_Lmin0_Lmax4000.txt',
-                                                        'dN1_dkk': 'N1der_KK_lmin600_lmax3000_full.txt',
-                                                        'dN1_dCl': {'tt': 'N1der_TT_lmin600_lmax3000_full.txt',
-                                                                    'ee': 'N1der_EE_lmin600_lmax3000_full.txt',
-                                                                    'bb': 'N1der_BB_lmin600_lmax3000_full.txt',
-                                                                    'te': 'N1der_TE_lmin600_lmax3000_full.txt'},
-                                                        },
+                                     'phi_cls': 'cosmo2017_10K_acc3_lenspotentialCls.dat',
+                                     'dNorm_dCl': 'norm_kk_correction_matrix_Lmin0_Lmax4000_new.npy',
+                                     'fAL': 'n0mv_fiducial_lmin600_lmax3000_Lmin0_Lmax4000.txt',
+                                     'dN1_dkk': 'N1der_KK_lmin600_lmax3000_full.txt',
+                                     'dN1_dCl': {'tt': 'N1der_TT_lmin600_lmax3000_full.txt',
+                                                 'ee': 'N1der_EE_lmin600_lmax3000_full.txt',
+                                                 'bb': 'N1der_BB_lmin600_lmax3000_full.txt',
+                                                 'te': 'N1der_TE_lmin600_lmax3000_full.txt'},
+                                     },
                              'Planck': {'fid_cls': 'cosmo2017_10K_acc3_lensedCls.dat',
-                                                                 'phi_cls': 'cosmo2017_10K_acc3_lenspotentialCls.dat',
-                                                                 'dNorm_dCl': 'P18_norm_kk_correction_matrix_Lmin0_Lmax3000_new.npy',
-                                                                 'fAL': 'PLANCK_n0mv_fiducial_lmin600_lmax3000_Lmin0_Lmax3000.txt',
-                                                                 'dN1_dkk': 'N1_planck_der_KK_lmin100_lmax2048.txt',
-                                                                 'dN1_dCl': {'tt': 'N1_planck_der_TT_lmin100_lmax2048.txt',
-                                                                             'ee': 'N1_planck_der_EE_lmin100_lmax2048.txt',
-                                                                             'bb': 'N1_planck_der_BB_lmin100_lmax2048.txt',
-                                                                             'te': 'N1_planck_der_TE_lmin100_lmax2048.txt'},
-                                                                 },
+                                        'phi_cls': 'cosmo2017_10K_acc3_lenspotentialCls.dat',
+                                        'dNorm_dCl': 'P18_norm_kk_correction_matrix_Lmin0_Lmax3000_new.npy',
+                                        'fAL': 'PLANCK_n0mv_fiducial_lmin600_lmax3000_Lmin0_Lmax3000.txt',
+                                        'dN1_dkk': 'N1_planck_der_KK_lmin100_lmax2048.txt',
+                                        'dN1_dCl': {'tt': 'N1_planck_der_TT_lmin100_lmax2048.txt',
+                                                    'ee': 'N1_planck_der_EE_lmin100_lmax2048.txt',
+                                                    'bb': 'N1_planck_der_BB_lmin100_lmax2048.txt',
+                                                    'te': 'N1_planck_der_TE_lmin100_lmax2048.txt'},
+                                        },
                              }
 
     _lklh_correction_modules = {}
@@ -119,6 +119,7 @@ class LensingLklhCorrection(Theory):
                 lensing_recons.add('ACT')
                 self._lklh_correction_sample_module_mapping[s] = 'ACT'
 
+        self.log.info(f"Loading lensing likelihood corrections ...")
         for key in lensing_recons:
             f_ls, f_tt, f_ee, f_bb, f_te = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['fid_cls']), unpack=True)
             f_tt = f_tt / (f_ls * (f_ls + 1.)) * 2. * np.pi
@@ -153,8 +154,8 @@ class LensingLklhCorrection(Theory):
         correction = self._current_state['lensing_lklh_correction'][self._lklh_correction_sample_module_mapping[sample]]
         return self._lklh_correction_modules[self._lklh_correction_sample_module_mapping[sample]].apply_corrections(cls, *correction, is_cross=cross_spectrum)
 
-    def get_Lmax_kk(self, sample):
+    def get_Lmax_kk(self):
         return self._Lmax_kk
 
-    def get_lmax_TEB(self, sample):
+    def get_lmax_TEB(self):
         return self._lmax_TEB

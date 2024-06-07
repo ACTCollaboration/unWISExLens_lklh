@@ -48,7 +48,7 @@ class unWISExLensTheory(Theory):
     clustering_redshift_fid_cosmo = {'H0': 67.66, 'ombh2': 0.02242, 'omch2': 0.11935351837638222, 'mnu': 0.06, 'nnu': 3.046, 'ns': 0.9665, 'As': 2.105209331337507e-09}
     _clustering_redshift_cosmo_correction = None
 
-    use_mean_field_correction = True
+    use_noise_bias_correction = True
 
     bxdN_dz_paths = {'Blue': 'aux_data/dndz/unWISE_blue_xcorr_bdndz.txt', 'Green': 'aux_data/dndz/unWISE_green_xcorr_bdndz.txt'}
     xmatch_dN_dz_paths = {'Blue': 'aux_data/dndz/unWISE_blue_xmatch_dndz.txt', 'Green': 'aux_data/dndz/unWISE_green_xmatch_dndz.txt'}
@@ -59,7 +59,7 @@ class unWISExLensTheory(Theory):
     fid_bias_evol = {'Blue': 'lambda z:0.8 + 1.2*z', 'Green': 'lambda z: np.clip(1.6*z**2, 1, np.inf)'}
     _fid_bias_evol_list = []
 
-    noise_bias_corr = []
+    _noise_bias_corr = {}
     _cross_spec_noise_bias_corr = {}
     _samples = []
     _dNdz_list = []
@@ -234,7 +234,7 @@ class unWISExLensTheory(Theory):
         return requires
 
     def load_sample_data(self):
-        self.noise_bias_corr = []
+        self._noise_bias_corr = []
 
         self._dNdz_list = []
         for i, sample in enumerate(self._samples):
@@ -248,21 +248,21 @@ class unWISExLensTheory(Theory):
 
             self._dNdz_list.append(dNdz(dN_dz_xmatch, bxdN_dz, delta_dndz_pcs_interp))
 
-            if self.use_mean_field_correction:
+            if self.use_noise_bias_correction:
                 noise_bias_corr = np.load(os.path.join(self.data_base_path, self.noise_bias_corr_paths[sample]), allow_pickle=True).item()
 
                 noise_bias_ell_selection, dump = np.where(noise_bias_corr['ell'][:, np.newaxis] == self._theory_code.ell_vals[np.newaxis, :])
                 assert (len(noise_bias_ell_selection) == len(self._theory_code.ell_vals))
                 if self.cleft_interp_helper is not None:
-                    self.noise_bias_corr.append({'gg': {'gg_bsq': noise_bias_corr['gg']['gg_bsq'][noise_bias_ell_selection],
-                                                                'gg_b': noise_bias_corr['gg']['gg_b'][noise_bias_ell_selection],
-                                                                'gmu_b': noise_bias_corr['gg']['gmu_b'][noise_bias_ell_selection]},
-                                                         'kg': {'kg_b': noise_bias_corr['kg']['kg_b'][noise_bias_ell_selection]}})
+                    self._noise_bias_corr.append({'gg': {'gg_bsq': noise_bias_corr['gg']['gg_bsq'][noise_bias_ell_selection],
+                                                         'gg_b': noise_bias_corr['gg']['gg_b'][noise_bias_ell_selection],
+                                                         'gmu_b': noise_bias_corr['gg']['gmu_b'][noise_bias_ell_selection]},
+                                                  'kg': {'kg_b': noise_bias_corr['kg']['kg_b'][noise_bias_ell_selection]}})
                 else:
-                    self.noise_bias_corr.append({'gg': {'gg_bsq': noise_bias_corr['gg']['gg_bsq'][noise_bias_ell_selection],
-                                                                'gg_b': np.zeros((len(self._theory_code.ell_vals), 1)),
-                                                                'gmu_b': noise_bias_corr['gg']['gmu_b'][noise_bias_ell_selection]},
-                                                         'kg': {'kg_b': noise_bias_corr['kg']['kg_b'][noise_bias_ell_selection]}})
+                    self._noise_bias_corr.append({'gg': {'gg_bsq': noise_bias_corr['gg']['gg_bsq'][noise_bias_ell_selection],
+                                                         'gg_b': np.zeros((len(self._theory_code.ell_vals), 1)),
+                                                         'gmu_b': noise_bias_corr['gg']['gmu_b'][noise_bias_ell_selection]},
+                                                  'kg': {'kg_b': noise_bias_corr['kg']['kg_b'][noise_bias_ell_selection]}})
 
                 if self.compute_gg_cross_spectra:
                     for j, sample2 in enumerate(self._samples[i + 1:]):
@@ -272,17 +272,17 @@ class unWISExLensTheory(Theory):
                         noise_bias_ell_selection, dump = np.where(noise_bias_corr['ell'][:, np.newaxis] == self._theory_code.ell_vals[np.newaxis, :])
                         assert (len(noise_bias_ell_selection) == len(self._theory_code.ell_vals))
                         if self.cleft_interp_helper is not None:
-                            self._cross_spec_mean_field_corrections[(i, j)] = {'g1g2': {'g1b_g2b': noise_bias_corr['g1g2']['g1b_g2b'][noise_bias_ell_selection],
-                                                                                        'g1b_g2': noise_bias_corr['g1g2']['g1b_g2'][noise_bias_ell_selection],
-                                                                                        'g2b_g1': noise_bias_corr['g1g2']['g2b_g1'][noise_bias_ell_selection]},
-                                                                               'g1mu2': {'gmu_b': noise_bias_corr['g1mu2']['gmu_b'][noise_bias_ell_selection]},
-                                                                               'g2mu1': {'gmu_b': noise_bias_corr['g2mu1']['gmu_b'][noise_bias_ell_selection]}}
+                            self._cross_spec_noise_bias_corr[(i, j)] = {'g1g2': {'g1b_g2b': noise_bias_corr['g1g2']['g1b_g2b'][noise_bias_ell_selection],
+                                                                                 'g1b_g2': noise_bias_corr['g1g2']['g1b_g2'][noise_bias_ell_selection],
+                                                                                 'g2b_g1': noise_bias_corr['g1g2']['g2b_g1'][noise_bias_ell_selection]},
+                                                                        'g1mu2': {'gmu_b': noise_bias_corr['g1mu2']['gmu_b'][noise_bias_ell_selection]},
+                                                                        'g2mu1': {'gmu_b': noise_bias_corr['g2mu1']['gmu_b'][noise_bias_ell_selection]}}
                         else:
-                            self._cross_spec_mean_field_corrections[(i, j)] = {'g1g2': {'g1b_g2b': noise_bias_corr['g1g2']['g1b_g2b'][noise_bias_ell_selection],
-                                                                                        'g1b_g2': np.zeros((len(self._theory_code.ell_vals), 1)),
-                                                                                        'g2b_g1': np.zeros((len(self._theory_code.ell_vals), 1))},
-                                                                               'g1mu2': {'gmu_b': noise_bias_corr['g1mu2']['gmu_b'][noise_bias_ell_selection]},
-                                                                               'g2mu1': {'gmu_b': noise_bias_corr['g2mu1']['gmu_b'][noise_bias_ell_selection]}}
+                            self._cross_spec_noise_bias_corr[(i, j)] = {'g1g2': {'g1b_g2b': noise_bias_corr['g1g2']['g1b_g2b'][noise_bias_ell_selection],
+                                                                                 'g1b_g2': np.zeros((len(self._theory_code.ell_vals), 1)),
+                                                                                 'g2b_g1': np.zeros((len(self._theory_code.ell_vals), 1))},
+                                                                        'g1mu2': {'gmu_b': noise_bias_corr['g1mu2']['gmu_b'][noise_bias_ell_selection]},
+                                                                        'g2mu1': {'gmu_b': noise_bias_corr['g2mu1']['gmu_b'][noise_bias_ell_selection]}}
             if not callable(self.fid_bias_evol[sample]):
                 try:
                     self._fid_bias_evol_list.append(eval(self.fid_bias_evol[sample]))
@@ -348,9 +348,9 @@ class unWISExLensTheory(Theory):
             raw_spectra = [self._current_state['cls'][i] for i in indices]
         else:
             raw_spectra = [self._current_state['cls'][0][i] for i in indices], dict([(k, self._current_state['cls'][1][k]) for k in itertools.combinations(indices, 2)])
-        mean_field = [self.noise_bias_corr[i] for i in indices] if self.use_mean_field_correction else None
+        noise_bias = [self._noise_bias_corr[i] for i in indices] if self.use_noise_bias_correction else None
 
-        return [out[ell_selection] for out in self._theory_code.evaluate_kg(raw_spectra, mean_field=mean_field, **kwargs)]
+        return [out[ell_selection] for out in self._theory_code.evaluate_kg(raw_spectra, noise_bias=noise_bias, **kwargs)]
 
     def get_gg(self, ell=None, samples=None, want_gg_cross=False, **kwargs):
         if ell is not None:
@@ -363,14 +363,14 @@ class unWISExLensTheory(Theory):
         else:
             indices = [self._samples.index(s) for s in samples]
 
-        mean_field = [self.noise_bias_corr[i] for i in indices] if self.use_mean_field_correction else None
+        noise_bias = [self._noise_bias_corr[i] for i in indices] if self.use_noise_bias_correction else None
 
         if not self.compute_gg_cross_spectra or not want_gg_cross:
             raw_spectra = [self._current_state['cls'][i] for i in indices]
-            return [out[ell_selection] for out in self._theory_code.evaluate_gg(raw_spectra, mean_field=mean_field, **kwargs)]
+            return [out[ell_selection] for out in self._theory_code.evaluate_gg(raw_spectra, noise_bias=noise_bias, **kwargs)]
         else:
             raw_spectra = [self._current_state['cls'][0][i] for i in indices], dict([(k, self._current_state['cls'][1][k]) for k in itertools.combinations(indices, 2)])
-            gg_auto, gg_cross = self._theory_code.evaluate_gg(raw_spectra, mean_field=mean_field, want_gg_cross=True, **kwargs)
+            gg_auto, gg_cross = self._theory_code.evaluate_gg(raw_spectra, noise_bias=noise_bias, want_gg_cross=True, **kwargs)
             return [out[ell_selection] for out in gg_auto], gg_cross[:, :, ell_selection]
 
     def get_cls(self, ell=None, samples=None, want_gg_cross=False, **kwargs):
@@ -384,15 +384,16 @@ class unWISExLensTheory(Theory):
         else:
             indices = [self._samples.index(s) for s in samples]
 
-        mean_field = [self.noise_bias_corr[i] for i in indices] if self.use_mean_field_correction else None
+        noise_bias = [self._noise_bias_corr[i] for i in indices] if self.use_noise_bias_correction else None
 
         if not self.compute_gg_cross_spectra or not want_gg_cross:
             raw_spectra = [self._current_state['cls'][i] for i in indices]
-            out_gg, out_kg = self._theory_code.evaluate(raw_spectra, mean_field=mean_field, **kwargs)
+            out_gg, out_kg = self._theory_code.evaluate(raw_spectra, noise_bias=noise_bias, **kwargs)
             return [out[ell_selection] for out in out_gg], [out[ell_selection] for out in out_kg]
         else:
+            cross_noise_bias = {k: self._cross_spec_noise_bias_corr[k] for k in itertools.combinations(indices, 2)} if self.use_noise_bias_correction else None
             raw_spectra = [self._current_state['cls'][0][i] for i in indices], dict([(k, self._current_state['cls'][1][k]) for k in itertools.combinations(indices, 2)])
-            out_gg, gg_cross, out_kg = self._theory_code.evaluate_gg(raw_spectra, mean_field=mean_field, want_gg_cross=True, **kwargs)
+            out_gg, gg_cross, out_kg = self._theory_code.evaluate(raw_spectra, noise_bias=noise_bias, cross_noise_bias=cross_noise_bias, want_gg_cross=True, **kwargs)
             return [out[ell_selection] for out in out_gg], gg_cross[:, :, ell_selection], [out[ell_selection] for out in out_kg]
 
     def get_clkk(self, ell=None):

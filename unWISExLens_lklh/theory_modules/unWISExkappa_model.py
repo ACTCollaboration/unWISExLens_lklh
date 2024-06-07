@@ -255,7 +255,7 @@ class unWISExLens_theory_model(object):
 
         return np.nansum(halofit_pk_evals * kappaKernel_eval[:, None]**2 * self._gauss_w[:, None], axis=0) * (chi_max - chi_min) / 2
 
-    def evaluate(self, raw_spectra, get='all', want_gg_cross=False, mean_field=None, cross_mean_field=None, bias=None, s_mag=None, pca_coeff=None, do_dndz_pca=True, cleft_coeff=None, **kwargs):
+    def evaluate(self, raw_spectra, get='all', want_gg_cross=False, noise_bias=None, cross_noise_bias=None, bias=None, s_mag=None, pca_coeff=None, do_dndz_pca=True, cleft_coeff=None, **kwargs):
         r"""
         Function to evaluate galaxy - galaxy and galaxy - lensing spectra. Given a set of raw spectral components and appropriate set of parameters this function will compute the final :math:`C_\ell^{gg}` and :math:`C_\ell^{\kappa g}`.
 
@@ -267,8 +267,8 @@ class unWISExLens_theory_model(object):
             which spectra to return (options: *all*, *gg*, *kg*)
         want_gg_cross: bool
             whether to compute cross_spectra
-        mean_field : list [dict]
-            mean field to correct for noise-bias due to positivity constraint of dn/dz, Has to be in the following format :py:class:`list` (samples) [:py:class:`dict` ["gg|kg|bdndz_norm", :py:class:`dict` ["gg_bsq|gg_b|...|kg_b|...", :py:class:`numpy.ndarray`]]]
+        noise_bias : list [dict]
+            correction for noise-bias due to positivity constraint of dn/dz, Has to be in the following format :py:class:`list` (samples) [:py:class:`dict` ["gg|kg|bdndz_norm", :py:class:`dict` ["gg_bsq|gg_b|...|kg_b|...", :py:class:`numpy.ndarray`]]]
         bias : list [float]
             linear order eulerian bias
         s_mag : list [float]
@@ -300,8 +300,8 @@ class unWISExLens_theory_model(object):
         if self._want_gg_cross:
             raw_spectra, raw_spectra_cross = raw_spectra
 
-        if mean_field is None:
-            mean_field = [{'kg': {"kg_b": np.zeros_like(self._ell_vals)},
+        if noise_bias is None:
+            noise_bias = [{'kg': {"kg_b": np.zeros_like(self._ell_vals)},
                            'gg': {"gg_bsq": np.zeros_like(self._ell_vals),
                                   "gg_b": np.zeros((len(self._ell_vals), 1 if self._cleft_interp_helper is None else len(self._cleft_interp_helper.assemble_cleft_coeff()))),
                                   "gmu_b": np.zeros_like(self._ell_vals)}} for i in range(len(raw_spectra))]
@@ -334,7 +334,7 @@ class unWISExLens_theory_model(object):
             b /= np.dot(raw_spectra[i]['bdndz_norm'], pca_coeff_final)
 
             if get=='gg' or get=='all':
-                out_gg[i] = self.__gg(raw_spectra[i], b, s, cleft_coeff_final, pca_coeff_final, mean_field[i], **gg_kwargs)
+                out_gg[i] = self.__gg(raw_spectra[i], b, s, cleft_coeff_final, pca_coeff_final, noise_bias[i], **gg_kwargs)
 
                 if want_gg_cross:
                     for j in range(i+1, len(raw_spectra)):
@@ -358,7 +358,7 @@ class unWISExLens_theory_model(object):
 
                         b2 /= np.dot(raw_spectra[j]['bdndz_norm'], pca_coeff_final2)
 
-                        mf_cross = cross_mean_field[(i,j)] if cross_mean_field is not None else {'g1g2': {"g1b_g2b": np.zeros_like(self._ell_vals),
+                        mf_cross = cross_noise_bias[(i, j)] if cross_noise_bias is not None else {'g1g2': {"g1b_g2b": np.zeros_like(self._ell_vals),
                                                                                                           "g1b_g2": np.zeros((len(self._ell_vals), 1 if self._cleft_interp_helper is None else len(self._cleft_interp_helper.assemble_cleft_coeff()))),
                                                                                                           "g2b_g1": np.zeros((len(self._ell_vals), 1 if self._cleft_interp_helper is None else len(self._cleft_interp_helper.assemble_cleft_coeff())))},
                                                                                                  "g1mu2": {'gmu_b': np.zeros_like(self._ell_vals)},
@@ -368,7 +368,7 @@ class unWISExLens_theory_model(object):
                         out_gg_cross[j,i] = out_gg_cross[i,j]
 
             if get=='kg' or get=='all':
-                out_kg[i] = self.__kg(raw_spectra[i], b, s, cleft_coeff_final, pca_coeff_final, mean_field[i], **kg_kwargs)
+                out_kg[i] = self.__kg(raw_spectra[i], b, s, cleft_coeff_final, pca_coeff_final, noise_bias[i], **kg_kwargs)
 
         if get=='all':
             if want_gg_cross:
@@ -385,7 +385,7 @@ class unWISExLens_theory_model(object):
         else:
             raise ValueError(f"Get options are 'all', 'gg' or 'kg', got unsupported option {get}.")
 
-    def evaluate_kg(self, raw_spectra, want_gg_cross=False, mean_field=None, bias=None, s_mag=None, pca_coeff=None, do_dndz_pca=True, cleft_coeff=None, cl_kg=True, cl_kg_HF=None, cl_kg_CLEFT=None, cl_kmu=True):
+    def evaluate_kg(self, raw_spectra, want_gg_cross=False, noise_bias=None, bias=None, s_mag=None, pca_coeff=None, do_dndz_pca=True, cleft_coeff=None, cl_kg=True, cl_kg_HF=None, cl_kg_CLEFT=None, cl_kmu=True):
         """
         Function to evaluate :math:`C_\ell^{\kappa g}`. Will call :func:`~unWISExACT_theory_model.evaluate` with get='kg'. See :func:`~unWISExACT_theory_model.evaluate` for additional documentation.
 
@@ -406,9 +406,9 @@ class unWISExLens_theory_model(object):
              Will return list of the final :math:`C_\ell^{\kappa g}`.
 
         """
-        return self.evaluate(raw_spectra, get='kg', want_gg_cross=want_gg_cross, mean_field=mean_field, bias=bias, s_mag=s_mag, pca_coeff=pca_coeff, do_dndz_pca=do_dndz_pca, cleft_coeff=cleft_coeff, cl_kg=cl_kg, cl_kg_HF=cl_kg_HF, cl_kg_CLEFT=cl_kg_CLEFT, cl_kmu=cl_kmu)
+        return self.evaluate(raw_spectra, get='kg', want_gg_cross=want_gg_cross, noise_bias=noise_bias, bias=bias, s_mag=s_mag, pca_coeff=pca_coeff, do_dndz_pca=do_dndz_pca, cleft_coeff=cleft_coeff, cl_kg=cl_kg, cl_kg_HF=cl_kg_HF, cl_kg_CLEFT=cl_kg_CLEFT, cl_kmu=cl_kmu)
 
-    def evaluate_gg(self, raw_spectra, want_gg_cross=False, mean_field=None, cross_mean_field=None, bias=None, bias_gmu=None, s_mag=None, pca_coeff=None, do_dndz_pca=True, cleft_coeff=None, cl_gg=True, cl_gmu=True, cl_mumu=True, cl_gg_bsq=None, cl_gg_b=None, cl_gg_nob=None, cl_gmu_b=None, cl_gmu_nob=None):
+    def evaluate_gg(self, raw_spectra, want_gg_cross=False, noise_bias=None, cross_noise_bias=None, bias=None, bias_gmu=None, s_mag=None, pca_coeff=None, do_dndz_pca=True, cleft_coeff=None, cl_gg=True, cl_gmu=True, cl_mumu=True, cl_gg_bsq=None, cl_gg_b=None, cl_gg_nob=None, cl_gmu_b=None, cl_gmu_nob=None):
         """
         Function to evaluate :math:`C_\ell^{g g}`. Will call :func:`~unWISExACT_theory_model.evaluate` with get='gg'. See :func:`~unWISExACT_theory_model.evaluate` for additional documentation.
 
@@ -438,10 +438,10 @@ class unWISExLens_theory_model(object):
 
         """
 
-        return self.evaluate(raw_spectra, get='gg', want_gg_cross=want_gg_cross, mean_field=mean_field, cross_mean_field=cross_mean_field, bias=bias, bias_gmu=bias_gmu, s_mag=s_mag, pca_coeff=pca_coeff, do_dndz_pca=do_dndz_pca, cleft_coeff=cleft_coeff, cl_gg=cl_gg, cl_gmu=cl_gmu, cl_mumu=cl_mumu, cl_gg_bsq=cl_gg_bsq, cl_gg_b=cl_gg_b, cl_gg_nob=cl_gg_nob, cl_gmu_b=cl_gmu_b, cl_gmu_nob=cl_gmu_nob)
+        return self.evaluate(raw_spectra, get='gg', want_gg_cross=want_gg_cross, noise_bias=noise_bias, cross_noise_bias=cross_noise_bias, bias=bias, bias_gmu=bias_gmu, s_mag=s_mag, pca_coeff=pca_coeff, do_dndz_pca=do_dndz_pca, cleft_coeff=cleft_coeff, cl_gg=cl_gg, cl_gmu=cl_gmu, cl_mumu=cl_mumu, cl_gg_bsq=cl_gg_bsq, cl_gg_b=cl_gg_b, cl_gg_nob=cl_gg_nob, cl_gmu_b=cl_gmu_b, cl_gmu_nob=cl_gmu_nob)
 
     @staticmethod
-    def __kg(raw_spectra, b, s, cleft_coeff, pca_coeff, mean_field, cl_kg=True, cl_kg_HF=None, cl_kg_CLEFT=None, cl_kmu=True):
+    def __kg(raw_spectra, b, s, cleft_coeff, pca_coeff, noise_bias, cl_kg=True, cl_kg_HF=None, cl_kg_CLEFT=None, cl_kmu=True):
         if cl_kg_HF is None:
             cl_kg_HF = cl_kg
         if cl_kg_CLEFT is None:
@@ -449,12 +449,12 @@ class unWISExLens_theory_model(object):
 
         cleft_terms = np.dot(raw_spectra['kg']['kg_nob'], cleft_coeff)
 
-        return cl_kg_HF * (np.dot(raw_spectra['kg']['kg_b'], pca_coeff) - mean_field['kg']['kg_b']) * b \
+        return cl_kg_HF * (np.dot(raw_spectra['kg']['kg_b'], pca_coeff) - noise_bias['kg']['kg_b']) * b \
                    + cl_kg_CLEFT * cleft_terms \
                    + cl_kmu * raw_spectra['kg']['kmu'] * (5 * s - 2)
 
     @staticmethod
-    def __gg(raw_spectra, b, s, cleft_coeff, pca_coeff, mean_field, b_gmu=None, cl_gg=True, cl_gmu=True, cl_mumu=True, cl_gg_bsq=None, cl_gg_b=None, cl_gg_nob=None, cl_gmu_b=None, cl_gmu_nob=None):
+    def __gg(raw_spectra, b, s, cleft_coeff, pca_coeff, noise_bias, b_gmu=None, cl_gg=True, cl_gmu=True, cl_mumu=True, cl_gg_bsq=None, cl_gg_b=None, cl_gg_nob=None, cl_gmu_b=None, cl_gmu_nob=None):
         if cl_gg_bsq is None:
             cl_gg_bsq = cl_gg
         if cl_gg_b is None:
@@ -476,15 +476,15 @@ class unWISExLens_theory_model(object):
         cleft_terms_gg_nob = np.dot(raw_spectra['gg']['gg_nob'], cleft_coeff)
         cleft_terms_gmu_nob = np.dot(raw_spectra['gg']['gmu_nob'], cleft_coeff)
 
-        return cl_gg_bsq * (np.dot(raw_spectra['gg']['gg_bsq'], pca_coeff_final_sq) - mean_field['gg']['gg_bsq']) * b**2 \
-                 + cl_gg_b * (np.dot(cleft_terms_gg_b, pca_coeff) - np.dot(mean_field['gg']['gg_b'], cleft_coeff)) * b \
+        return cl_gg_bsq * (np.dot(raw_spectra['gg']['gg_bsq'], pca_coeff_final_sq) - noise_bias['gg']['gg_bsq']) * b**2 \
+                 + cl_gg_b * (np.dot(cleft_terms_gg_b, pca_coeff) - np.dot(noise_bias['gg']['gg_b'], cleft_coeff)) * b \
                  + cl_gg_nob * cleft_terms_gg_nob \
-                 + cl_gmu_b * 2 * (np.dot(raw_spectra['gg']['gmu_b'], pca_coeff) - mean_field['gg']['gmu_b']) * b_gmu * (5 * s - 2) \
+                 + cl_gmu_b * 2 * (np.dot(raw_spectra['gg']['gmu_b'], pca_coeff) - noise_bias['gg']['gmu_b']) * b_gmu * (5 * s - 2) \
                  + cl_gmu_nob * 2 * cleft_terms_gmu_nob * (5 * s - 2) \
                  + cl_mumu * raw_spectra['gg']['mumu'] * (5 * s - 2)**2
 
     @staticmethod
-    def __gg_cross(raw_spectra, b1, b2, s1, s2, pca_coeff1, pca_coeff2, cleft_coeff12, cleft_coeff21, mean_field, cl_gg=True, cl_gmu=True, cl_mumu=True):
+    def __gg_cross(raw_spectra, b1, b2, s1, s2, pca_coeff1, pca_coeff2, cleft_coeff12, cleft_coeff21, noise_bias, cl_gg=True, cl_gmu=True, cl_mumu=True):
 
         # {'g1g2': {'g1b_g2b': g1b_g2b_spectra,
         #           'g1b_g2': g1b_g2_spectra,
@@ -504,12 +504,12 @@ class unWISExLens_theory_model(object):
         cleft_terms_g1_mu2 = np.dot(raw_spectra['g1mu2']['gmu_nob'], cleft_coeff12)
         cleft_terms_g2_mu1 = np.dot(raw_spectra['g2mu1']['gmu_nob'], cleft_coeff21)
 
-        return cl_gg * ( (np.dot(raw_spectra['g1g2']['g1b_g2b'], pca_coeff_final_sq) - mean_field['g1g2']['g1b_g2b']) * b1 * b2
-                        +(np.dot(cleft_terms_g1b_g2, pca_coeff1) - np.dot(mean_field['g1g2']['g1b_g2'], cleft_coeff21)) * b1/2
-                        +(np.dot(cleft_terms_g2b_g1, pca_coeff2) - np.dot(mean_field['g1g2']['g2b_g1'], cleft_coeff12)) * b2/2
-                        +cleft_terms_g1_g2/2 + cleft_terms_g2_g1/2) \
-            + cl_gmu * ( (np.dot(raw_spectra['g1mu2']['gmu_b'], pca_coeff1) - mean_field['g1mu2']['gmu_b']) * b1 * (5 * s2 - 2)
-                        +(np.dot(raw_spectra['g2mu1']['gmu_b'], pca_coeff2) - mean_field['g2mu1']['gmu_b']) * b2 * (5 * s1 - 2)
+        return cl_gg * ((np.dot(raw_spectra['g1g2']['g1b_g2b'], pca_coeff_final_sq) - noise_bias['g1g2']['g1b_g2b']) * b1 * b2
+                        + (np.dot(cleft_terms_g1b_g2, pca_coeff1) - np.dot(noise_bias['g1g2']['g1b_g2'], cleft_coeff21)) * b1 / 2
+                        + (np.dot(cleft_terms_g2b_g1, pca_coeff2) - np.dot(noise_bias['g1g2']['g2b_g1'], cleft_coeff12)) * b2 / 2
+                        + cleft_terms_g1_g2 / 2 + cleft_terms_g2_g1 / 2) \
+            + cl_gmu * ((np.dot(raw_spectra['g1mu2']['gmu_b'], pca_coeff1) - noise_bias['g1mu2']['gmu_b']) * b1 * (5 * s2 - 2)
+                        + (np.dot(raw_spectra['g2mu1']['gmu_b'], pca_coeff2) - noise_bias['g2mu1']['gmu_b']) * b2 * (5 * s1 - 2)
                         + cleft_terms_g1_mu2 * (5 * s2 - 2) + cleft_terms_g2_mu1 * (5 * s1 - 2)) \
             + cl_mumu * raw_spectra['mu1mu2'] * (5 * s1 - 2) * (5 * s2 - 2)
 

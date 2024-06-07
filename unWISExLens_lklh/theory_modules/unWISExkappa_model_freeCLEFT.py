@@ -167,7 +167,7 @@ class unWISExLens_theory_model(base_model):
         else:
             return outputs
 
-    def evaluate(self, raw_spectra, get='all', want_gg_cross=False, mean_field=None, cross_mean_field=None, bias=None, s_mag=None, pca_coeff=None, do_dndz_pca=True, cleft_coeff=None, **kwargs):
+    def evaluate(self, raw_spectra, get='all', want_gg_cross=False, noise_bias=None, cross_noise_bias=None, bias=None, s_mag=None, pca_coeff=None, do_dndz_pca=True, cleft_coeff=None, **kwargs):
 
         kg_kwargs = {}
         gg_kwargs = {}
@@ -180,8 +180,8 @@ class unWISExLens_theory_model(base_model):
         if self._want_gg_cross:
             raw_spectra, raw_spectra_cross = raw_spectra
 
-        if mean_field is None:
-            mean_field = [{'kg': {"kg_b": np.zeros_like(self._ell_vals)},
+        if noise_bias is None:
+            noise_bias = [{'kg': {"kg_b": np.zeros_like(self._ell_vals)},
                            'gg': {"gg_bsq": np.zeros_like(self._ell_vals),
                                   "gg_b": np.zeros((len(self._ell_vals), 1, 1)) if self._cleft_interp_helper is None else np.zeros((len(self._ell_vals), *self._cleft_interp_helper.assemble_cleft_coeff()[0].shape)),
                                   "gmu_b": np.zeros_like(self._ell_vals)}} for i in range(len(raw_spectra))]
@@ -214,7 +214,7 @@ class unWISExLens_theory_model(base_model):
             b /= np.dot(raw_spectra[i]['bdndz_norm'], pca_coeff_final)
 
             if get=='gg' or get=='all':
-                out_gg[i] = self.__gg(raw_spectra[i], b, s, cleft_coeff_final1, cleft_coeff_final2, pca_coeff_final, mean_field[i], **gg_kwargs)
+                out_gg[i] = self.__gg(raw_spectra[i], b, s, cleft_coeff_final1, cleft_coeff_final2, pca_coeff_final, noise_bias[i], **gg_kwargs)
 
                 if want_gg_cross:
                     for j in range(i+1, len(raw_spectra)):
@@ -238,7 +238,7 @@ class unWISExLens_theory_model(base_model):
 
                         b2 /= np.dot(raw_spectra[j]['bdndz_norm'], pca_coeff_final2)
 
-                        mf_cross = cross_mean_field[(i, j)] if cross_mean_field is not None else {'g1g2': {"g1b_g2b": np.zeros_like(self._ell_vals),
+                        mf_cross = cross_noise_bias[(i, j)] if cross_noise_bias is not None else {'g1g2': {"g1b_g2b": np.zeros_like(self._ell_vals),
                                                                                                            "g1b_g2": np.zeros((len(self._ell_vals), 1, 1)) if self._cleft_interp_helper is None else np.zeros((len(self._ell_vals), *self._cleft_interp_helper.assemble_cleft_coeff()[0].shape)),
                                                                                                            "g2b_g1": np.zeros((len(self._ell_vals), 1, 1)) if self._cleft_interp_helper is None else np.zeros((len(self._ell_vals), *self._cleft_interp_helper.assemble_cleft_coeff()[0].shape))},
                                                                                                   "g1mu2": {'gmu_b': np.zeros_like(self._ell_vals)},
@@ -248,7 +248,7 @@ class unWISExLens_theory_model(base_model):
                         out_gg_cross[j,i] = out_gg_cross[i,j]
 
             if get=='kg' or get=='all':
-                out_kg[i] = self.__kg(raw_spectra[i], b, s, cleft_coeff_final1, pca_coeff_final, mean_field[i], **kg_kwargs)
+                out_kg[i] = self.__kg(raw_spectra[i], b, s, cleft_coeff_final1, pca_coeff_final, noise_bias[i], **kg_kwargs)
 
         if get=='all':
             if want_gg_cross:
@@ -266,7 +266,7 @@ class unWISExLens_theory_model(base_model):
             raise ValueError(f"Get options are 'all', 'gg' or 'kg', got unsupported option {get}.")
 
     @staticmethod
-    def __kg(raw_spectra, b, s, cleft_coeff, pca_coeff, mean_field, cl_kg=True, cl_kg_HF=None, cl_kg_CLEFT=None, cl_kmu=True):
+    def __kg(raw_spectra, b, s, cleft_coeff, pca_coeff, noise_bias, cl_kg=True, cl_kg_HF=None, cl_kg_CLEFT=None, cl_kmu=True):
         if cl_kg_HF is None:
             cl_kg_HF = cl_kg
         if cl_kg_CLEFT is None:
@@ -274,12 +274,12 @@ class unWISExLens_theory_model(base_model):
 
         cleft_terms = np.einsum('lij, ij->l', raw_spectra['kg']['kg_nob'], cleft_coeff)
 
-        return cl_kg_HF * (np.dot(raw_spectra['kg']['kg_b'], pca_coeff) - mean_field['kg']['kg_b']) * b \
+        return cl_kg_HF * (np.dot(raw_spectra['kg']['kg_b'], pca_coeff) - noise_bias['kg']['kg_b']) * b \
                + cl_kg_CLEFT * cleft_terms \
                + cl_kmu * raw_spectra['kg']['kmu'] * (5 * s - 2)
 
     @staticmethod
-    def __gg(raw_spectra, b, s, cleft_coeff1, cleft_coeff2, pca_coeff, mean_field, b_gmu=None, cl_gg=True, cl_gmu=True, cl_mumu=True, cl_gg_bsq=None, cl_gg_b=None, cl_gg_nob=None, cl_gmu_b=None, cl_gmu_nob=None):
+    def __gg(raw_spectra, b, s, cleft_coeff1, cleft_coeff2, pca_coeff, noise_bias, b_gmu=None, cl_gg=True, cl_gmu=True, cl_mumu=True, cl_gg_bsq=None, cl_gg_b=None, cl_gg_nob=None, cl_gmu_b=None, cl_gmu_nob=None):
         if cl_gg_bsq is None:
             cl_gg_bsq = cl_gg
         if cl_gg_b is None:
@@ -301,15 +301,15 @@ class unWISExLens_theory_model(base_model):
         cleft_terms_gg_nob = np.einsum('lij, ij->l', raw_spectra['gg']['gg_nob1'], cleft_coeff1) + np.einsum('lij, ij->l', raw_spectra['gg']['gg_nob2'], cleft_coeff2)
         cleft_terms_gmu_nob = np.einsum('lij, ij->l', raw_spectra['gg']['gmu_nob'], cleft_coeff1)
 
-        return cl_gg_bsq * (np.dot(raw_spectra['gg']['gg_bsq'], pca_coeff_final_sq) - mean_field['gg']['gg_bsq']) * b**2 \
-               + cl_gg_b * (np.dot(cleft_terms_gg_b, pca_coeff) - np.einsum('lij, ij->l', mean_field['gg']['gg_b'], cleft_coeff1)) * b \
+        return cl_gg_bsq * (np.dot(raw_spectra['gg']['gg_bsq'], pca_coeff_final_sq) - noise_bias['gg']['gg_bsq']) * b**2 \
+               + cl_gg_b * (np.dot(cleft_terms_gg_b, pca_coeff) - np.einsum('lij, ij->l', noise_bias['gg']['gg_b'], cleft_coeff1)) * b \
                + cl_gg_nob * cleft_terms_gg_nob \
-               + cl_gmu_b * 2 * (np.dot(raw_spectra['gg']['gmu_b'], pca_coeff) - mean_field['gg']['gmu_b']) * b_gmu * (5 * s - 2) \
+               + cl_gmu_b * 2 * (np.dot(raw_spectra['gg']['gmu_b'], pca_coeff) - noise_bias['gg']['gmu_b']) * b_gmu * (5 * s - 2) \
                + cl_gmu_nob * 2 * cleft_terms_gmu_nob * (5 * s - 2) \
                + cl_mumu * raw_spectra['gg']['mumu'] * (5 * s - 2)**2
 
     @staticmethod
-    def __gg_cross(raw_spectra, b1, b2, s1, s2, pca_coeff1, pca_coeff2, cleft_coeff12_1, cleft_coeff12_2, cleft_coeff21_1, cleft_coeff21_2, mean_field, cl_gg=True, cl_gmu=True, cl_mumu=True):
+    def __gg_cross(raw_spectra, b1, b2, s1, s2, pca_coeff1, pca_coeff2, cleft_coeff12_1, cleft_coeff12_2, cleft_coeff21_1, cleft_coeff21_2, noise_bias, cl_gg=True, cl_gmu=True, cl_mumu=True):
 
         pca_coeff_final_sq = np.outer(pca_coeff1, pca_coeff2).flatten()
 
@@ -320,12 +320,12 @@ class unWISExLens_theory_model(base_model):
         cleft_terms_g1_mu2 = np.einsum('lij, ij->l', raw_spectra['g1mu2']['gmu_nob'], cleft_coeff12_1)
         cleft_terms_g2_mu1 = np.einsum('lij, ij->l', raw_spectra['g2mu1']['gmu_nob'], cleft_coeff21_1)
 
-        return cl_gg * ( (np.dot(raw_spectra['g1g2']['g1b_g2b'], pca_coeff_final_sq) - mean_field['g1g2']['g1b_g2b']) * b1 * b2
-                        +(np.dot(cleft_terms_g1b_g2, pca_coeff1) - np.einsum('lij, ij->l', mean_field['g1g2']['g1b_g2'], cleft_coeff21_1)) * b1 / 2
-                        +(np.dot(cleft_terms_g2b_g1, pca_coeff2) - np.einsum('lij, ij->l', mean_field['g1g2']['g2b_g1'], cleft_coeff12_1)) * b2 / 2
+        return cl_gg * ((np.dot(raw_spectra['g1g2']['g1b_g2b'], pca_coeff_final_sq) - noise_bias['g1g2']['g1b_g2b']) * b1 * b2
+                        + (np.dot(cleft_terms_g1b_g2, pca_coeff1) - np.einsum('lij, ij->l', noise_bias['g1g2']['g1b_g2'], cleft_coeff21_1)) * b1 / 2
+                        + (np.dot(cleft_terms_g2b_g1, pca_coeff2) - np.einsum('lij, ij->l', noise_bias['g1g2']['g2b_g1'], cleft_coeff12_1)) * b2 / 2
                         + cleft_terms_g1_g2 / 2 + cleft_terms_g2_g1 / 2) \
-            + cl_gmu * ( (np.dot(raw_spectra['g1mu2']['gmu_b'], pca_coeff1) - mean_field['g1mu2']['gmu_b']) * b1 * (5 * s2 - 2)
-                        +(np.dot(raw_spectra['g2mu1']['gmu_b'], pca_coeff2) - mean_field['g2mu1']['gmu_b']) * b2 * (5 * s1 - 2)
+            + cl_gmu * ((np.dot(raw_spectra['g1mu2']['gmu_b'], pca_coeff1) - noise_bias['g1mu2']['gmu_b']) * b1 * (5 * s2 - 2)
+                        + (np.dot(raw_spectra['g2mu1']['gmu_b'], pca_coeff2) - noise_bias['g2mu1']['gmu_b']) * b2 * (5 * s1 - 2)
                         + cleft_terms_g1_mu2 * (5 * s2 - 2) + cleft_terms_g2_mu1 * (5 * s1 - 2)) \
             + cl_mumu * raw_spectra['mu1mu2'] * (5 * s1 - 2) * (5 * s2 - 2)
 
