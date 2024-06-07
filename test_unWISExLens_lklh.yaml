@@ -1,0 +1,75 @@
+theory:
+  camb:
+    extra_args:
+      halofit_version: mead
+      lmax: 4000
+      lens_margin: 1250
+      lens_potential_accuracy: 4
+      NonLinear: NonLinear_both
+      AccuracyBoost: 1
+      lSampleBoost: 1
+      lAccuracyBoost: 1
+  unWISExLens_lklh.unWISExLensTheory: null
+likelihood:
+  unWISExLens_lklh.ThreeXTwoACTPlanck: null
+params:
+  H0: 67
+  As: 2.15086031154146e-9
+  nnu: 3.046
+  mnu: 0.06
+  ns: 0.9665
+  omegabh2:
+    value: 0.02242
+    renames:
+    - ombh2
+  omegach2:
+    value: 0.11935351837638222
+    renames:
+    - omch2
+  OmegaM:
+    derived: 'lambda omegabh2,omegach2,mnu,H0: (omegabh2 + omegach2 + mnu/93.14)/(H0/100)**2'
+  sigma8:
+    derived: true
+    latex: \sigma_8
+  S8:
+    derived: 'lambda OmegaM, sigma8: sigma8*(OmegaM/0.3)**0.5'
+    latex: S_8
+  b_Blue_ACT: 1.6
+  log10SN_Blue_ACT: -7.05
+  s_Blue_ACT: 0.455
+  Blue_ACT_pca_0: -0.5843837663087972
+  Blue_ACT_pca_1: -0.3985951242854526
+  Blue_ACT_pca_2: -0.14460224245714698
+  Blue_ACT_shift_cleft_cb2: 0.5551969885793376
+  Blue_ACT_shift_cleft_cbs: 0.16830370991953963
+  b_Green_ACT: 2.3
+  log10SN_Green_ACT: -6.79
+  s_Green_ACT: 0.653
+  Green_ACT_pca_0: -0.30320235632661185
+  Green_ACT_pca_1: -0.3042716635545827
+  Green_ACT_pca_2: -0.30615305724122277
+  Green_ACT_pca_3: -0.0945228819723003
+  Green_ACT_pca_4: -0.23779156954362762
+  Green_ACT_shift_cleft_cb2: 0.41552846311201563
+  Green_ACT_shift_cleft_cbs: 0.21990237272388719
+  b_Blue_Planck: 1.6
+  log10SN_Blue_Planck: -7.05
+  s_Blue_Planck: 0.455
+  Blue_Planck_pca_0: -0.5843837663087972
+  Blue_Planck_pca_1: -0.3985951242854526
+  Blue_Planck_pca_2: -0.14460224245714698
+  Blue_Planck_shift_cleft_cb2: 0.5551969885793376
+  Blue_Planck_shift_cleft_cbs: 0.16830370991953963
+  b_Green_Planck: 2.3
+  log10SN_Green_Planck: -6.79
+  s_Green_Planck: 0.653
+  Green_Planck_pca_0: -0.30320235632661185
+  Green_Planck_pca_1: -0.3042716635545827
+  Green_Planck_pca_2: -0.30615305724122277
+  Green_Planck_pca_3: -0.0945228819723003
+  Green_Planck_pca_4: -0.23779156954362762
+  Green_Planck_shift_cleft_cb2: 0.41552846311201563
+  Green_Planck_shift_cleft_cbs: 0.21990237272388719
+sampler:
+  evaluate: null
+output: example_outputs/point_eval_test

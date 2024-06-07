@@ -1,6 +1,6 @@
 # unWISE x CMB lensing likelihood
 
-This repository provides the public likelihood for the cross-correlation analysis using unWISE galaxies and CMB lensign reconstructions from ACT and Planck.
+This repository provides the public likelihood for the cross-correlation analysis using unWISE galaxies and CMB lensing reconstructions from ACT and Planck.
 
 If you use this software and/or the associated data, please cite both of the following papers:
 - [Farren, Krolewski, MacCrann, Ferraro et al ACT Collaboration (2023), arxiv:2309.05659](https://arxiv.org/abs/2309.05659)
@@ -35,7 +35,7 @@ If you wish to be able to make changes to the likelihood for development, first 
     pip install -e . --user
 
 ## Data
-The bandpowers, covariances and auxiliary data for this likliehood is available for download [here](https://portal.nersc.gov/project/act/act_x_unWISE_xcorr+3x2pt/data_unWISExLens.zip). Download the data archive and extract it inside the cloned directory such that `unWISExLens_lklh/data/` contains three directories `bandpowers`, `covariances`, and `aux_data`.
+The bandpowers, covariances and auxiliary data for this likliehood is available for download [here](https://portal.nersc.gov/project/act/act_x_unWISE_xcorr+3x2pt/data_unWISExLens.tar.gz). Download the data archive and extract it inside the cloned directory such that `unWISExLens_lklh/data/` contains three directories `bandpowers`, `covariances`, and `aux_data`.
 
 ## Use with Cobaya
 
