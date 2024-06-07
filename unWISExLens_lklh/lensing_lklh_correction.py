@@ -88,8 +88,10 @@ class LensingLklhCorrection(Theory):
     _lklh_correction_sample_module_mapping = {}
 
     def initialize(self):
-
-        self.log.info("Loading  ...")
+        """
+        Initialization after all components initialized.
+        """
+        pass
         
 
     def initialize_with_provider(self, provider):
