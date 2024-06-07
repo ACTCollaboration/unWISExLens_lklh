@@ -125,3 +125,5 @@ For CAMB calls, we recommend the following (or higher accuracy):
 
 There is was a minor bug in `Cobaya` that meant the defaults for the likelihoods where not correctly read from the yaml files. It has been fixed [here](https://github.com/CobayaSampler/cobaya/pull/360), but you may have to update your sampler and/or install it from source.
 
+At present the liklihood is compatible only with `camb`. Compatiblity with `class` and emulators replacing the boltzman solver are under development.
+
