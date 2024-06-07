@@ -57,12 +57,71 @@ Note that by default the likelihood includes marginalisation over the primary CM
 theory:
   camb: ...
   unWISExLens_lklh.unWISExLensTheory: null
-  unWISExLens_lklh.unWISExLensTheory: null
+  unWISExLens_lklh.LensingLklhCorrection: null
 likelihood:
   primaty_CMB_likelihoods: ...
   unWISExLens_lklh.ThreeXTwoACTPlanck:
     want_lensing_lklh_correction: True
 ```
 
+### Other important parameters
 
+The theory code and likelihood have several options. Most of these should not be altered, but some may be of interest to perform alternative analyses.
+
+Options for the likelihood include the following:
+
+```
+unWISExLens_lklh.(ThreeXTwo|XCorr)(ACTPlanck|ACT|Planck):
+    samples: #which cross-correlations to use (Note that you will also have to adjust the galaxy nuisance parameters and priors which are automatically selected when using the predefined likelihoods)
+        - Blue_ACT (names are in the form (Blue|Green)_(ACT|Planck)
+        - ...
+    lranges_(gg|kg|kk): # bandpower selection to use in analysis (We caution that the modelling has not been verfied outside the default range, so this should only be used to decrease the scale range, e.g. to restrict to linear scales)
+        (Blue|Green)_(ACT|Planck): # for Clgg and Clkg
+            - lmin
+            - lmax
+        (ACT|Planck): # for Clkk
+            - lmin
+            - lmax
+    lensing_auto_spectrum_from_camb: (true|false) # whether to use CAMB to compute the lensing auto-power spectrum or compute it internally using the limber approximation (used when reconstructing growth of perturbations, sigma8(z))
+    #parameters for varying the LPT contributions to Clgg and Clkg (see Farren et al. 2023 for model details; should all be set to false if use_linear_theory = true in theory module or use_cleft = false
+    scale_cleft_b2: false
+    shift_cleft_b2: true
+    scale_cleft_bs: false
+    shift_cleft_bs: true
+    
+```
+The theory module provides the following options:
+```
+unWISExLens_lklh.unWISExLensTheory:
+    use_linear_theory: (false|true) # use linear theory P(k) (will deactivate LPT corrections and HALOFIT)
+    use_cleft: (true|false) # whether to use LPT terms
+    use_free_cleft_model: (true|false) # use free parameters in LPT expansion rather than bias-coevolutoon relations (see options to likelihood above)
+    use_fiducial_cleft: (true|false) # use LPT terms evaluated at fiducial cosmology (requires velocileptor package to deactivate)
+    use_Az_parametrisation: (false|true) # use free scaling of the linear power spectrum in bins to reconstruct growth of structure in model agnostic way
+    Az_parametrisation:
+      type: bins
+      bin_edges:
+      - 1.09
+      - 1.75
+      - .inf
+      params:
+      - A0
+      - A1
+      - A2
+```
+
+### Recommended theory accuracy
+
+For CAMB calls, we recommend the following (or higher accuracy):
+- `lmax`: 4000
+- `lens_margin`:1250
+- `lens_potential_accuracy`: 4
+- `AccuracyBoost`:1
+- `lSampleBoost`:1
+- `lAccuracyBoost`:1
+- `halofit_version`:`mead2016`
+
+## Notes
+
+There is was a minor bug in `Cobaya` that meant the defaults for the likelihoods where not correctly read from the yaml files. It has been fixed [here](https://github.com/CobayaSampler/cobaya/pull/360), but you may have to update your sampler and/or install it from source.
 
