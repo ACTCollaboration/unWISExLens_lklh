@@ -121,6 +121,20 @@ For CAMB calls, we recommend the following (or higher accuracy):
 - `lAccuracyBoost`:1
 - `halofit_version`:`mead2016`
 
+## Example `.yaml`-files and starting covmat
+
+Along with the likelihood we provide an example `.yaml`-file to perform the likelihood analysis with Cobaya. The
+
+    cobaya-run example_LCDM_unWISExLens_3x2pt+CMB2pt.yaml
+
+will perform a joined analysis of the unWISE 3x2pt data using both ACT and *Planck* lensing along with primary CMB observations from Planck. The file should be adapted for the desired analysis. We also provide a starting covariance matrix for this run (`LCDM_unWISExLens_3x2pt+CMB2pt.covmat`).
+
+As a simple check on the installation the user may wish to run
+
+    cobaya-run test_unWISExLens_lklh.yaml
+
+which will evaluate the likelihood at a single point. If all components are installed correctly the test should yield a total log-posterior of -62.1655.
+
 ## Notes
 
 There is was a minor bug in `Cobaya` that meant the defaults for the likelihoods where not correctly read from the yaml files. It has been fixed [here](https://github.com/CobayaSampler/cobaya/pull/360), but you may have to update your sampler and/or install it from source.
