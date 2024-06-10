@@ -34,12 +34,14 @@ If you wish to be able to make changes to the likelihood for development, first 
 
     pip install -e . --user
 
+*Note*: Up to *Cobaya* version 3.5.1 a minor bug prevents the defaults from being initialised correctly. It has been fixed [here](https://github.com/CobayaSampler/cobaya/pull/360), but you may have to update your sampler and/or install it from source.
+
 ## Data
 The bandpowers, covariances and auxiliary data for this likliehood is available for download [here](https://portal.nersc.gov/project/act/act_x_unWISE_xcorr+3x2pt/data_unWISExLens.tar.gz). Download the data archive and extract it inside the cloned directory such that `unWISExLens_lklh/data/` contains three directories `bandpowers`, `covariances`, and `aux_data`. You can simply run the `get_unWISExLens_data.sh` script to achieve this automatically.
 
-## Use with Cobaya
+## Use with *Cobaya*
 
-This likelihood provides several versions of the cross-correlation and 3x2pt analysis using two redshift samples of unWISE data and CMB lensing reconstructions from ACT DR6 and *Planck* PR4. The analysis requires a dedicted theory module `unWISExLens_lklh.unWISExLensTheory` which has to be included in the theory block of the Cobaya `.yaml`-file. The likelihood itself comes in several versions enabling analyses using only the cross-correlations (`XCorr`) or the full 3x2pt dataset (`ThreeXTwo`). You can choose to use both ACT DR6 and *Planck* PR4 (`XCorrACTPlanck` or `ThreeXTwoACTPlanck`) or ACT and *Planck* alone (`XCorr(ACT|Planck)` or `ThreeXTwo(ACT|Planck)`). The `XCorr` likelihood includes the galaxy-CMB lensing cross-correlations ($C_\ell^{\kappa g}$) along with the galaxy auto-correlations ($C_\ell^{gg}$) of the two samples while the `ThreeXTwo` likelihood additionally includes the CMB lensing auto-correlation ($C_\ell^{\kappa \kappa}$).
+This likelihood provides several versions of the cross-correlation and 3x2pt analysis using two redshift samples of unWISE data and CMB lensing reconstructions from ACT DR6 and *Planck* PR4. The analysis requires a dedicted theory module `unWISExLens_lklh.unWISExLensTheory` which has to be included in the theory block of the *Cobaya* `.yaml`-file. The likelihood itself comes in several versions enabling analyses using only the cross-correlations (`XCorr`) or the full 3x2pt dataset (`ThreeXTwo`). You can choose to use both ACT DR6 and *Planck* PR4 (`XCorrACTPlanck` or `ThreeXTwoACTPlanck`) or ACT and *Planck* alone (`XCorr(ACT|Planck)` or `ThreeXTwo(ACT|Planck)`). The `XCorr` likelihood includes the galaxy-CMB lensing cross-correlations ($C_\ell^{\kappa g}$) along with the galaxy auto-correlations ($C_\ell^{gg}$) of the two samples while the `ThreeXTwo` likelihood additionally includes the CMB lensing auto-correlation ($C_\ell^{\kappa \kappa}$).
 
 To use for example the 3x2pt dataset from ACT and *Planck* include the following in your `theory` and `likelihood` blocks.
 
@@ -51,7 +53,7 @@ likelihood:
   unWISExLens_lklh.ThreeXTwoACTPlanck: null
 ```
 
-Note that by default the likelihood includes marginalisation over the primary CMB power spectrum (see Farren et al. 2023 and Qu et al. 2023 for details). To combine with primary CMB data set the `want_lensing_lklh_correction` attribute of the likelihood to `True`. Furthermore, this requires the `LensingLklhCorrection` module to be loaded as a theory class. This module provides the likelihood corrections discussed in Appendix A of Farren et al. 2024. Separating this module ensures that the corrections are only evaluated once for each set of cosmological parameters enabling one to take advantage of the parameter speed hierarchy to more efficiently marginalise over the galaxy nuisance parameters which can be evaluated faster than the cosmological parameters. The Cobaya `.yaml`-file should then contain the following
+Note that by default the likelihood includes marginalisation over the primary CMB power spectrum (see Farren et al. 2023 and Qu et al. 2023 for details). To combine with primary CMB data set the `want_lensing_lklh_correction` attribute of the likelihood to `True`. Furthermore, this requires the `LensingLklhCorrection` module to be loaded as a theory class. This module provides the likelihood corrections discussed in Appendix A of Farren et al. 2024. Separating this module ensures that the corrections are only evaluated once for each set of cosmological parameters enabling one to take advantage of the parameter speed hierarchy to more efficiently marginalise over the galaxy nuisance parameters which can be evaluated faster than the cosmological parameters. The *Cobaya* `.yaml`-file should then contain the following
 
 ```
 theory:
@@ -126,7 +128,7 @@ For CAMB calls, we recommend the following (or higher accuracy):
 
 ## Example `.yaml`-files and starting covmat
 
-Along with the likelihood we provide an example `.yaml`-file to perform the likelihood analysis with Cobaya. After installation the command
+Along with the likelihood we provide an example `.yaml`-file to perform the likelihood analysis with *Cobaya*. After installation the command
 
     cobaya-run example_LCDM_unWISExLens_3x2pt+CMB2pt.yaml
 
@@ -139,8 +141,6 @@ As a simple check on the installation the user may wish to run
 which will evaluate the likelihood at a single point. If all components are installed correctly the test should yield a total log-posterior of $-62.1652$.
 
 ## Notes
-
-There is/was a minor bug in `Cobaya` that meant the defaults for the likelihoods where not correctly read from the yaml files. It has been fixed [here](https://github.com/CobayaSampler/cobaya/pull/360), but you may have to update your sampler and/or install it from source.
 
 At present the liklihood is compatible only with `camb`. Compatiblity with `class` and emulators replacing the boltzman solver are under development.
 
