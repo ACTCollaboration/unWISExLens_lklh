@@ -136,7 +136,7 @@ As a simple check on the installation the user may wish to run
 
     cobaya-run test_unWISExLens_lklh.yaml
 
-which will evaluate the likelihood at a single point. If all components are installed correctly the test should yield a total log-posterior of -62.1655.
+which will evaluate the likelihood at a single point. If all components are installed correctly the test should yield a total log-posterior of $-62.1652$.
 
 ## Notes
 
