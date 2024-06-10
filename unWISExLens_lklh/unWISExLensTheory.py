@@ -148,7 +148,7 @@ class unWISExLensTheory(Theory):
             pars = camb.CAMBparams()
             pars.set_cosmology(**{key: self.clustering_redshift_fid_cosmo[key] for key in set(inspect.signature(pars.set_cosmology).parameters.keys()).intersection(set(self.clustering_redshift_fid_cosmo.keys()))})
             pars.InitPower.set_params(**{key: self.clustering_redshift_fid_cosmo[key] for key in set(inspect.signature(pars.InitPower.set_params).parameters.keys()).intersection(set(self.clustering_redshift_fid_cosmo.keys()))})
-            pars.set_matter_power(redshifts=np.linspace(0, 4.0, 41), kmax=10.0)
+            pars.set_matter_power(redshifts=np.logspace(np.log10(self.zmin + 1), np.log10(self.zmax+0.2 + 1), self.Nz) - 1, kmax=10.0)
 
             # Non-Linear spectra (Halofit)
             pars.NonLinear = camb.model.NonLinear_both
@@ -158,12 +158,12 @@ class unWISExLensTheory(Theory):
             fid_pk_interp = PowerSpectrumInterpolator(z_nonlin, k_nonlin, pk_nonlin)
             fid_cosmo = cosmo_from_camb(results)
 
-            zbins = np.concatenate([np.arange(0, 0.8, 0.05), np.arange(0.8, 4.0, 0.2), [4.0]])
+            zbins = np.concatenate([np.arange(0, 0.8, 0.05), np.arange(0.8, self.zmax+0.2, 0.2)])
 
             if self.correct_clustering_redshift_cosmo_approx and not self.correct_clustering_redshift_cosmo:
                 self._clustering_redshift_cosmo_correction = CrossRedshiftCosmoCorrectionApprox(fid_cosmo)
             else:
-                self._clustering_redshift_cosmo_correction = CrossRedshiftCosmoCorrectionExact(fid_cosmo, fid_pk_interp, zbins, smin=2.5, smax=10, nbins=3, log_bins=True, N_integration=1024, kmin=1e-4, kmax=10)
+                self._clustering_redshift_cosmo_correction = CrossRedshiftCosmoCorrectionExact(fid_cosmo, fid_pk_interp, zbins)
 
     def get_requirements(self):
         """
