@@ -1,6 +1,7 @@
 import numpy as np
 from .model_helpers_unWISExLens import cosmo_from_camb, dNdz
 from ..auxiliary.pk_interpolator import PowerSpectrumInterpolator
+from ..auxiliary.auxiliary_functions import evaluate_pk_kmax
 from .unWISExkappa_model import unWISExLens_theory_model as base_model
 
 
@@ -58,9 +59,9 @@ class unWISExLens_theory_model(base_model):
 
         matter2weyl_factor = 3/2 * cosmo.Omega_m * cosmo.H0**2 * (1+z_vals)[:,None] * kGrid**2/(3*cosmo.curvature - kGrid**2)
 
-        halofit_pk_evals_weyl_weyl = pk_weyl_weyl.P(z_vals[:, None], kGrid, grid=False) / cosmo.comoving_angular_diameter_distance(chi_vals)[:, None] ** 2
-        halofit_pk_evals_weyl_dnonu = pk_weyl_dnonu.P(z_vals[:, None], kGrid, grid=False) / cosmo.comoving_angular_diameter_distance(chi_vals)[:, None] ** 2
-        halofit_pk_evals_dnonu_dnonu = pk_dnonu_dnonu.P(z_vals[:, None], kGrid, grid=False) / cosmo.comoving_angular_diameter_distance(chi_vals)[:, None] ** 2
+        halofit_pk_evals_weyl_weyl = evaluate_pk_kmax(pk_weyl_weyl, z_vals, kGrid, kmax=self._k_max) / cosmo.comoving_angular_diameter_distance(chi_vals)[:, None] ** 2
+        halofit_pk_evals_weyl_dnonu = evaluate_pk_kmax(pk_weyl_dnonu, z_vals, kGrid, kmax=self._k_max) / cosmo.comoving_angular_diameter_distance(chi_vals)[:, None] ** 2
+        halofit_pk_evals_dnonu_dnonu = evaluate_pk_kmax(pk_dnonu_dnonu, z_vals, kGrid, kmax=self._k_max) / cosmo.comoving_angular_diameter_distance(chi_vals)[:, None] ** 2
         if cleft_interpolations_dtot_dnonu is not None:
             cleft_pk_evals_weyl_dnonu = np.zeros((*halofit_pk_evals_weyl_dnonu.shape, len(cleft_interpolations_dnonu_dnonu)))
             cleft_pk_evals_dnonu_dnonu = np.zeros((*halofit_pk_evals_dnonu_dnonu.shape, len(cleft_interpolations_dnonu_dnonu)))

@@ -59,3 +59,16 @@ def combine_inputs(*arrays, sorted=True):
     else:
         return np.unique(np.concatenate(arrays))
 
+
+def evaluate_pk_kmax(pk_interp, z, k, kmax=None, log=False):
+    out = np.full_like(k, np.nan)
+    if kmax is None:
+        kmax = pk_interp.kmax
+    k_sel = (k <= kmax)
+    if log:
+        out[k_sel] = pk_interp.logP(z[np.where(k_sel)[0]], k[k_sel], grid=False)
+    else:
+        out[k_sel] = pk_interp.P(z[np.where(k_sel)[0]], k[k_sel], grid=False)
+
+    return out
+
