@@ -263,7 +263,13 @@ class CleftInterpolationHelper(object):
         self._extrap_kmax = extrap_kmax
 
         self._cleft = None
-        self._threads = len(os.sched_getaffinity(0)) if threads is None else threads
+        if threads is None:
+            try:
+                self._threads = len(os.sched_getaffinity(0))
+            except AttributeError:
+                self._threads = None
+        else:
+            self._threads = threads
 
     def compute_cleft_spectra(self, k, z, Pk, get_table=False):
         try:
