@@ -129,6 +129,13 @@ class unWISExLensTheory(Theory):
             else:
                 raise LoggedError(self.log, f"Unknown Az parametrisation type {self.Az_parametrisation['type']}.")
 
+        if self.correct_clustering_redshift_cosmo_approx and not self.correct_clustering_redshift_cosmo:
+            self._clustering_redshift_cosmo_correction = CrossRedshiftCosmoCorrectionApprox()
+        else:
+            corr_zmax = min([self.zmax + 0.2, 4.0])
+            zbins = np.concatenate([np.arange(0, 0.8, 0.05), np.arange(0.8, corr_zmax, 0.2)])
+            self._clustering_redshift_cosmo_correction = CrossRedshiftCosmoCorrectionExact(zbins)
+
     def initialize_with_provider(self, provider):
         """
         Initialization after other components initialized, using Provider class
@@ -136,19 +143,24 @@ class unWISExLensTheory(Theory):
         """
         self.provider = provider
 
-        camb = None
-        for c in provider.model.components:
-            if isinstance(c, cobaya.theories.camb.camb.CAMB):
-                camb = c.camb
-
-        if camb is None:
-            import camb
-
         if self.correct_clustering_redshift_cosmo or self.correct_clustering_redshift_cosmo_approx:
+
+            camb = None
+            for c in provider.model.components:
+                if isinstance(c, cobaya.theories.camb.camb.CAMB):
+                    camb = c.camb
+            if camb is None:
+                try:
+                    import camb
+                except ImportError:
+                    raise LoggedError(self.log, "CAMB is required for the cross-correlation redshift correction.")
+
+            corr_zmax = min([self.zmax + 0.2, 4.0])
+
             pars = camb.CAMBparams()
             pars.set_cosmology(**{key: self.clustering_redshift_fid_cosmo[key] for key in set(inspect.signature(pars.set_cosmology).parameters.keys()).intersection(set(self.clustering_redshift_fid_cosmo.keys()))})
             pars.InitPower.set_params(**{key: self.clustering_redshift_fid_cosmo[key] for key in set(inspect.signature(pars.InitPower.set_params).parameters.keys()).intersection(set(self.clustering_redshift_fid_cosmo.keys()))})
-            pars.set_matter_power(redshifts=np.logspace(np.log10(self.zmin + 1), np.log10(self.zmax+0.2 + 1), self.Nz) - 1, kmax=10.0)
+            pars.set_matter_power(redshifts=np.logspace(np.log10(self.zmin + 1), np.log10(corr_zmax + 1), self.Nz) - 1, kmax=10.0)
 
             # Non-Linear spectra (Halofit)
             pars.NonLinear = camb.model.NonLinear_both
@@ -158,12 +170,11 @@ class unWISExLensTheory(Theory):
             fid_pk_interp = PowerSpectrumInterpolator(z_nonlin, k_nonlin, pk_nonlin)
             fid_cosmo = cosmo_from_camb(results)
 
-            zbins = np.concatenate([np.arange(0, 0.8, 0.05), np.arange(0.8, self.zmax+0.2, 0.2)])
-
             if self.correct_clustering_redshift_cosmo_approx and not self.correct_clustering_redshift_cosmo:
-                self._clustering_redshift_cosmo_correction = CrossRedshiftCosmoCorrectionApprox(fid_cosmo)
+                self._clustering_redshift_cosmo_correction.set_fiducial_factor(fid_cosmo)
             else:
-                self._clustering_redshift_cosmo_correction = CrossRedshiftCosmoCorrectionExact(fid_cosmo, fid_pk_interp, zbins)
+                self._clustering_redshift_cosmo_correction.set_fiducial_factor(fid_cosmo, fid_pk_interp)
+
 
     def get_requirements(self):
         """
@@ -178,8 +189,8 @@ class unWISExLensTheory(Theory):
     def must_provide(self, **requirements):
         requires = {}
         zmin = self.zmin
-        zmax = self.zmax
-        z_vals = np.logspace(np.log10(self.zmin + 1), np.log10(self.zmax + 1), self.Nz) - 1
+        zmax = self.zmax + 0.2 if self.correct_clustering_redshift_cosmo and self.zmax < 4.0 else self.zmax
+        z_vals = np.logspace(np.log10(self.zmin + 1), np.log10(zmax + 1), self.Nz) - 1
 
         pk_vars_pairs = set()
 
@@ -204,7 +215,7 @@ class unWISExLensTheory(Theory):
             assert (not self.use_cleft or not self.use_linear_theory), "Cannot use CLEFT when linear theory is activated."
 
             if self.use_cleft and not self.use_fiducial_cleft:
-                requires['Pk_grid'] = {'z': z_vals[z_vals<=3.0], 'k_max': self.k_max, 'nonlinear': False, 'vars_pairs': [["delta_nonu", "delta_nonu"], ["delta_tot", "delta_nonu"]]}
+                requires['Pk_grid'] = {'z': z_vals[z_vals <= 4.0], 'k_max': self.k_max, 'nonlinear': False, 'vars_pairs': [["delta_nonu", "delta_nonu"], ["delta_tot", "delta_nonu"]]}
 
         if self._want_clkk or self._want_kg_gg:
             # Nz = self.Nz if not self._want_clkk else int(np.round((zmax - zmin) / (self.zmax - self.zmin) * self.Nz))
@@ -213,6 +224,7 @@ class unWISExLensTheory(Theory):
             if self.use_Az_parametrisation and not self.use_linear_theory:
                 requires['Pk_interpolator'] = {'z': z_vals, 'k_max': self.k_max, 'nonlinear': (False, True), 'vars_pairs': pk_vars_pairs}
             requires['CAMBdata'] = None
+
 
             theory_params = {'zmax': self.zmax,
                              'zmin': self.zmin,
