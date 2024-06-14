@@ -20,6 +20,22 @@ def select_from_matrix(mat, selectionA, selectionB=None):
 
     return mat[np.where(selection_matrix)].reshape(np.sum(selectionA), np.sum(selectionB))
 
+
+def standardize_input_cl(ells, cells, lmax=None, lmin=None):
+    if lmax is None:
+        lmax = int(np.max(ells))
+    if lmin is None:
+        lmin = 0
+
+    assert np.all(ells % 1 == 0), "Input ells must be integers."
+    ells = ells.astype(int)
+
+    out_cells = np.zeros(lmax-lmin+1)
+    out_cells[ells[(lmin <= ells) & (ells <= lmax)]] = cells[(lmin <= ells) & (ells <= lmax)]
+
+    return out_cells
+
+
 def density_space(xs, ps, n, endpoint=False, order=1, random=False):
     """Draw samples with spacing specified by a density function.
 

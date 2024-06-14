@@ -2,6 +2,8 @@ from cobaya.theory import Theory
 import numpy as np
 import os
 
+from .auxiliary.auxiliary_functions import standardize_input_cl
+
 
 class LensingLklhCorrectionHelper(object):
 
@@ -34,7 +36,7 @@ class LensingLklhCorrectionHelper(object):
         if is_cross:
             clkk_kg[:len(norm_correction)] *= (1 + norm_correction[:len(clkk_kg)])
         else:
-            assert (len(clkk_kg) >= self.__Lmax_N1corr + 1), "Input Clkk has Lmax less than the required Lmax of the N1 correction."
+            assert (len(clkk_kg) >= self.__Lmax_N1corr + 1), "Input Clkk has Lmax larger than the Lmax of the N1 correction."
             N1_kk_corr = self.__dN1_dClkk[:, :len(clkk_kg)] @ (clkk_kg[:self.__dN1_dCl.shape[-1]] - self.__clkk_fid[:min([self.__dN1_dCl.shape[-1], len(clkk_kg)])])
 
             clkk_kg[:min([len(norm_correction), len(self.__clkk_fid)])] += 2*norm_correction[:min([len(clkk_kg), len(self.__clkk_fid)])] * self.__clkk_fid[:min([len(norm_correction), len(clkk_kg)])]
@@ -124,16 +126,17 @@ class LensingLklhCorrection(Theory):
         self.log.info(f"Loading lensing likelihood corrections ...")
         for key in lensing_recons:
             f_ls, f_tt, f_ee, f_bb, f_te = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['fid_cls']), unpack=True)
-            f_tt = f_tt / (f_ls * (f_ls + 1.)) * 2. * np.pi
-            f_ee = f_ee / (f_ls * (f_ls + 1.)) * 2. * np.pi
-            f_bb = f_bb / (f_ls * (f_ls + 1.)) * 2. * np.pi
-            f_te = f_te / (f_ls * (f_ls + 1.)) * 2. * np.pi
+            f_tt = standardize_input_cl(f_ls, f_tt / (f_ls * (f_ls + 1.)) * 2. * np.pi)
+            f_ee = standardize_input_cl(f_ls, f_ee / (f_ls * (f_ls + 1.)) * 2. * np.pi)
+            f_bb = standardize_input_cl(f_ls, f_bb / (f_ls * (f_ls + 1.)) * 2. * np.pi)
+            f_te = standardize_input_cl(f_ls, f_te / (f_ls * (f_ls + 1.)) * 2. * np.pi)
 
             fd_ls, f_dd = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['phi_cls']), unpack=True, usecols=[0, 5])
             f_kk = f_dd * 2. * np.pi / 4.
 
             dNorm_dCl = np.load(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['dNorm_dCl']))
             fAL_ls, fAL = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['fAL']))
+            fAL = standardize_input_cl(fAL_ls, fAL)
             dN1_dkk = np.loadtxt(os.path.join(self.lklh_corr_base_path, self.lklh_correction_paths[key]['dN1_dkk']))
             dN1_dCl = []
             for spec in ['tt', 'ee', 'bb', 'te']:
