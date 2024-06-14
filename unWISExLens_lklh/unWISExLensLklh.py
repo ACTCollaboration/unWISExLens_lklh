@@ -44,9 +44,15 @@ class unWISExLensLklh(Likelihood):
          e.g. here we load some data file
         """
 
+        from unWISExLens_lklh import __version__
+        self.log.info(f"Initializing unWISExLensLklh v{__version__}...")
+
         if self.data_base_path is None:
             from unWISExLens_lklh import __data_version__
             self.data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"../data/v{__data_version__}")
+            self.log.info(f"Using data with version v{__data_version__}.")
+        else:
+            self.log.info(f"Using data from {self.data_base_path}")
 
         # clear
         self._binning_function_gg = []
