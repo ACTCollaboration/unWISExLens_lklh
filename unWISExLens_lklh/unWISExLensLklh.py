@@ -44,10 +44,9 @@ class unWISExLensLklh(Likelihood):
          e.g. here we load some data file
         """
 
-        if self.path is None:
-            self.data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data")
-        else:
-            self.data_base_path = self.path
+        if self.data_base_path is None:
+            from unWISExLens_lklh import __data_version__
+            self.data_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"../data/v{__data_version__}")
 
         # clear
         self._binning_function_gg = []

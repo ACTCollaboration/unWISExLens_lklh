@@ -60,11 +60,11 @@ class LensingLklhCorrectionHelper(object):
 
 class LensingLklhCorrection(Theory):
 
-    lklh_corr_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../data/aux_data/lklh_corr")
+    lklh_corr_base_path = None
 
     lklh_correction_paths = {'ACT': {'fid_cls': 'cosmo2017_10K_acc3_lensedCls.dat',
                                      'phi_cls': 'cosmo2017_10K_acc3_lenspotentialCls.dat',
-                                     'dNorm_dCl': 'norm_kk_correction_matrix_Lmin0_Lmax4000_new.npy',
+                                     'dNorm_dCl': 'norm_correction_matrix_Lmin0_Lmax4000.npy',
                                      'fAL': 'n0mv_fiducial_lmin600_lmax3000_Lmin0_Lmax4000.txt',
                                      'dN1_dkk': 'N1der_KK_lmin600_lmax3000_full.txt',
                                      'dN1_dCl': {'tt': 'N1der_TT_lmin600_lmax3000_full.txt',
@@ -74,7 +74,7 @@ class LensingLklhCorrection(Theory):
                                      },
                              'Planck': {'fid_cls': 'cosmo2017_10K_acc3_lensedCls.dat',
                                         'phi_cls': 'cosmo2017_10K_acc3_lenspotentialCls.dat',
-                                        'dNorm_dCl': 'P18_norm_kk_correction_matrix_Lmin0_Lmax3000_new.npy',
+                                        'dNorm_dCl': 'P18_norm_correction_matrix_Lmin0_Lmax3000.npy',
                                         'fAL': 'PLANCK_n0mv_fiducial_lmin600_lmax3000_Lmin0_Lmax3000.txt',
                                         'dN1_dkk': 'N1_planck_der_KK_lmin100_lmax2048.txt',
                                         'dN1_dCl': {'tt': 'N1_planck_der_TT_lmin100_lmax2048.txt',
@@ -93,6 +93,10 @@ class LensingLklhCorrection(Theory):
         """
         Initialization after all components initialized.
         """
+
+        if self.lklh_corr_base_path is None:
+            from unWISExLens_lklh import __data_version__
+            self.lklh_corr_base_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), f"../data/v{__data_version__}/aux_data/lklh_corr")
         pass
         
 
