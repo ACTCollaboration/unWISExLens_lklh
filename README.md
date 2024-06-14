@@ -20,7 +20,7 @@ When using cross-correlations with the Planck PR4 lensing reconstruction and/or 
 
 ## Chains
 
-Chains from Farren et al. 2023 are available for download on NERSC [here](https://portal.nersc.gov/project/act/act_x_unWISE_xcorr+3x2pt/). Chains from Farren et al. 2024 will also be made available under this address upon journal publication of the paper.
+Chains from Farren et al. 2023 and Farren et al. 2024 are available for download on NERSC [here](https://portal.nersc.gov/project/act/act_x_unWISE_xcorr+3x2pt/).
 
 ## Installation
 ### Option 1: Install from PyPI
