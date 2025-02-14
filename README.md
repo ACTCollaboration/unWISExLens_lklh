@@ -4,7 +4,7 @@ This repository provides the public likelihood for the cross-correlation analysi
 
 If you use this software and/or the associated data, please cite both of the following papers:
 - [Farren, Krolewski, MacCrann, Ferraro et al ACT Collaboration (2023), arxiv:2309.05659](https://arxiv.org/abs/2309.05659)
-- Farren, Krolewski, Qu, Ferraro et al ACT Collaboration (2024; in prep.), arxiv:2407.XXXXX
+- [Farren, Krolewski, Qu, Ferraro et al ACT Collaboration (2024), arxiv:2409.02109](https://arxiv.org/abs/2409.02109)
 
 Furthermore, for the unWISE data cite:
 - [Krolewski, Ferraro, Schlafly and White, arxiv:1909.07412](https://arxiv.org/abs/1909.07412)
