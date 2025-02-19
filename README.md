@@ -131,7 +131,7 @@ Along with the likelihood we provide an example `.yaml`-file to perform the like
 
     cobaya-run example_LCDM_unWISExLens_3x2pt+CMB2pt.yaml
 
-will perform a joined analysis of the unWISE 3x2pt data using both ACT and *Planck* lensing along with primary CMB observations from Planck. The file should be adapted for the desired analysis. We also provide a starting covariance matrix for this run (`LCDM_unWISExLens_3x2pt+CMB2pt.covmat`) which can be used as a starting pont for other analyses.
+will perform a joined analysis of the unWISE 3x2pt data using both ACT and *Planck* lensing along with primary CMB observations from Planck. The file should be adapted for the desired analysis. We also provide a starting covariance matrix for this run (`LCDM_unWISExLens_3x2pt+CMB2pt.covmat`) which can be used as a starting point for other analyses.
 
 As a simple check on the installation the user may wish to run
 
