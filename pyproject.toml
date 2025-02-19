@@ -5,11 +5,12 @@ build-backend = "flit_core.buildapi"
 [project]
 name = "unWISExLens_lklh"
 authors = [{name = "Gerrit S. Farren", email = "gfarren@lbl.gov"}]
+description = "likelihood for cross-correlation analysis using unWISE galaxies and CMB lensing reconstructions from ACT and Planck"
 readme = "README.md"
 classifiers = [
 	"License :: OSI Approved :: BSD License",
 ]
-dynamic = ["version", "description"]
+dynamic = ["version"]
 dependencies = ["numpy >=1", "scipy >=1", "cobaya >=3.5", "healpy", "camb >=1.5"]
 
 [project.urls]
