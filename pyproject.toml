@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "unWISExLens_lklh"
-authors = [{name = "Gerrit S. Farren", email = "gsf29@cam.ac.uk"}]
+authors = [{name = "Gerrit S. Farren", email = "gfarren@lbl.gov"}]
 readme = "README.md"
 classifiers = [
 	"License :: OSI Approved :: BSD License",
