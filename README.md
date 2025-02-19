@@ -24,7 +24,6 @@ Chains from Farren et al. 2023 and Farren et al. 2024 are available for download
 
 ## Installation
 ### Option 1: Install from PyPI
-*NOTE: not yet available*
 You can install the likelihood directly with:
 
     pip install unWISExLens_lklk
