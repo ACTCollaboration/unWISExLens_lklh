@@ -4,6 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "unWISExLens_lklh"
+version = "1.0"
 authors = [{name = "Gerrit S. Farren", email = "gfarren@lbl.gov"}]
 readme = "README.md"
 classifiers = [
